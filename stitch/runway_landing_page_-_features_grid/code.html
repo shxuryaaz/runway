@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Runway - Features Grid</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Manrope', sans-serif;
+        }
+        .grid-bg {
+            background-image: radial-gradient(#d1d5db 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        .dark .grid-bg {
+            background-image: radial-gradient(#1e293b 1px, transparent 1px);
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-[#111418] dark:text-white transition-colors duration-300">
+<div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<!-- Top Navigation Bar -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#f0f2f4] dark:border-b-slate-800 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md px-10 py-3 sticky top-0 z-50">
+<div class="flex items-center gap-4 text-[#111418] dark:text-white">
+<div class="size-6 text-primary">
+<svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path clip-rule="evenodd" d="M24 4H42V17.3333V30.6667H24V44H6V30.6667V17.3333H24V4Z" fill="currentColor" fill-rule="evenodd"></path>
+</svg>
+</div>
+<h2 class="text-lg font-extrabold leading-tight tracking-tight">Runway</h2>
+</div>
+<div class="flex flex-1 justify-end gap-8">
+<nav class="hidden md:flex items-center gap-9">
+<a class="text-sm font-semibold hover:text-primary transition-colors" href="#">Product</a>
+<a class="text-sm font-semibold hover:text-primary transition-colors" href="#">Features</a>
+<a class="text-sm font-semibold hover:text-primary transition-colors" href="#">Pricing</a>
+<a class="text-sm font-semibold hover:text-primary transition-colors" href="#">About</a>
+</nav>
+<div class="flex gap-3">
+<button class="flex min-w-[84px] cursor-pointer items-center justify-center rounded-lg h-10 px-5 bg-primary text-white text-sm font-bold tracking-wide hover:opacity-90 transition-opacity">
+                            Get Started
+                        </button>
+<button class="flex min-w-[84px] cursor-pointer items-center justify-center rounded-lg h-10 px-5 bg-[#f0f2f4] dark:bg-slate-800 text-[#111418] dark:text-white text-sm font-bold hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors">
+                            Sign In
+                        </button>
+</div>
+</div>
+</header>
+<!-- Main Content Area with Grid Background -->
+<main class="flex-1 grid-bg">
+<div class="max-w-[1200px] mx-auto px-6 py-16 md:py-24">
+<!-- Section Header -->
+<div class="text-center mb-16">
+<span class="text-primary font-bold text-sm tracking-[0.2em] uppercase mb-4 block">Capabilities</span>
+<h1 class="text-[#111418] dark:text-white text-4xl md:text-5xl font-extrabold leading-tight tracking-[-0.02em]">
+                            Built for early stage founders
+                        </h1>
+<p class="mt-4 text-[#617589] dark:text-slate-400 text-lg max-w-2xl mx-auto">
+                            The execution layer for your startup. From seed to scale, manage every milestone with AI-enhanced precision and blockchain-grade security.
+                        </p>
+</div>
+<!-- Bento Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6">
+<!-- Card 1: Execution & Milestone Tracking (Large - 3 columns) -->
+<div class="lg:col-span-3 bg-white dark:bg-slate-900 rounded-xl border border-[#dbe0e6] dark:border-slate-800 p-8 flex flex-col justify-between group hover:shadow-xl transition-all duration-300">
+<div class="mb-8">
+<div class="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-primary">timeline</span>
+</div>
+<h3 class="text-[#111418] dark:text-white text-2xl font-bold mb-3">Execution &amp; milestone tracking</h3>
+<p class="text-[#617589] dark:text-slate-400">Track every detail from MVP to scale with automated status reporting and AI forecasting.</p>
+</div>
+<div class="relative w-full aspect-[4/3] rounded-lg overflow-hidden border border-[#f0f2f4] dark:border-slate-700 bg-gray-50 dark:bg-slate-950 p-4 shadow-inner">
+<!-- Mock UI: Project Timeline -->
+<div class="space-y-4">
+<div class="flex items-center justify-between p-3 bg-white dark:bg-slate-900 rounded border border-gray-100 dark:border-slate-800 shadow-sm">
+<div class="flex items-center gap-3">
+<div class="w-2 h-2 rounded-full bg-green-500"></div>
+<span class="text-sm font-bold">Phase 1: MVP Design</span>
+</div>
+<span class="px-2 py-1 text-[10px] bg-primary/10 text-primary font-bold rounded uppercase">Completed</span>
+</div>
+<div class="flex items-center justify-between p-3 bg-white dark:bg-slate-900 rounded border border-gray-100 dark:border-slate-800 shadow-sm ring-2 ring-primary/20">
+<div class="flex items-center gap-3">
+<div class="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
+<span class="text-sm font-bold">Phase 2: Alpha Launch</span>
+</div>
+<span class="px-2 py-1 text-[10px] bg-primary text-white font-bold rounded uppercase">Active</span>
+</div>
+<div class="flex items-center justify-between p-3 bg-white dark:bg-slate-900 rounded border border-gray-100 dark:border-slate-800 shadow-sm opacity-60">
+<div class="flex items-center gap-3">
+<div class="w-2 h-2 rounded-full bg-gray-400"></div>
+<span class="text-sm font-bold">Phase 3: Beta Scale</span>
+</div>
+<span class="px-2 py-1 text-[10px] bg-gray-100 dark:bg-slate-800 text-gray-500 font-bold rounded uppercase">Upcoming</span>
+</div>
+</div>
+<img alt="" class="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-5 pointer-events-none" data-alt="Abstract data visualization dashboard UI" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDRyeEGZF5hol7CqORS3oteMm8LKmvqN8yqR38hVQU0KEQHfJ5T9ZZwFlLyfomT1fhmDW9gwUifV-UzU_wvZwjMgq45BdQ9VAizYLt633KlF5R5Y3JJN--k58_U5ZHrDa-JRJ1P98NldzPWZbISi9tYi-XfMlqg3beYn_44vzvNAhcsUZpSuLonkLi2SEBVVHE3r4PRzZMG7i9nrR6atJyTdoHa3b6Q8ULbONbKbQiV_TIEu243jpt99O4dpIdt2zJeyIoD1t4FmwkF"/>
+</div>
+</div>
+<!-- Card 2: Integrates Seamlessly (Large - 3 columns) -->
+<div class="lg:col-span-3 bg-white dark:bg-slate-900 rounded-xl border border-[#dbe0e6] dark:border-slate-800 p-8 flex flex-col justify-between group hover:shadow-xl transition-all duration-300">
+<div class="mb-8">
+<div class="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-primary">hub</span>
+</div>
+<h3 class="text-[#111418] dark:text-white text-2xl font-bold mb-3">Integrates seamlessly</h3>
+<p class="text-[#617589] dark:text-slate-400">Connect your favorite tools. From Slack and Jira to Loom and GitHub, stay in sync without switching tabs.</p>
+</div>
+<div class="grid grid-cols-4 gap-4 md:gap-6 p-4 bg-[#f6f7f8] dark:bg-slate-950 rounded-lg h-full max-h-[280px] content-center items-center justify-items-center">
+<!-- Integration Logos Grid -->
+<div class="size-10 md:size-12 bg-white dark:bg-slate-800 rounded-lg shadow-sm flex items-center justify-center grayscale hover:grayscale-0 transition-all cursor-pointer"><span class="material-symbols-outlined text-blue-500">alternate_email</span></div>
+<div class="size-10 md:size-12 bg-white dark:bg-slate-800 rounded-lg shadow-sm flex items-center justify-center grayscale hover:grayscale-0 transition-all cursor-pointer"><span class="material-symbols-outlined text-blue-600">terminal</span></div>
+<div class="size-10 md:size-12 bg-white dark:bg-slate-800 rounded-lg shadow-sm flex items-center justify-center grayscale hover:grayscale-0 transition-all cursor-pointer"><span class="material-symbols-outlined text-orange-500">inventory_2</span></div>
+<div class="size-10 md:size-12 bg-white dark:bg-slate-800 rounded-lg shadow-sm flex items-center justify-center grayscale hover:grayscale-0 transition-all cursor-pointer"><span class="material-symbols-outlined text-indigo-500">description</span></div>
+<div class="size-10 md:size-12 bg-white dark:bg-slate-800 rounded-lg shadow-sm flex items-center justify-center grayscale hover:grayscale-0 transition-all cursor-pointer"><span class="material-symbols-outlined text-red-500">chat</span></div>
+<div class="size-10 md:size-12 bg-white dark:bg-slate-800 rounded-lg shadow-sm flex items-center justify-center grayscale hover:grayscale-0 transition-all cursor-pointer"><span class="material-symbols-outlined text-green-500">videocam</span></div>
+<div class="size-10 md:size-12 bg-white dark:bg-slate-800 rounded-lg shadow-sm flex items-center justify-center grayscale hover:grayscale-0 transition-all cursor-pointer"><span class="material-symbols-outlined text-purple-500">account_tree</span></div>
+<div class="size-10 md:size-12 bg-white dark:bg-slate-800 rounded-lg shadow-sm flex items-center justify-center grayscale hover:grayscale-0 transition-all cursor-pointer"><span class="material-symbols-outlined text-blue-400">code</span></div>
+<div class="size-10 md:size-12 bg-white dark:bg-slate-800 rounded-lg shadow-sm flex items-center justify-center grayscale hover:grayscale-0 transition-all cursor-pointer"><span class="material-symbols-outlined text-gray-800">grid_view</span></div>
+<div class="size-10 md:size-12 bg-white dark:bg-slate-800 rounded-lg shadow-sm flex items-center justify-center grayscale hover:grayscale-0 transition-all cursor-pointer"><span class="material-symbols-outlined text-yellow-600">task_alt</span></div>
+<div class="size-10 md:size-12 bg-white dark:bg-slate-800 rounded-lg shadow-sm flex items-center justify-center grayscale hover:grayscale-0 transition-all cursor-pointer"><span class="material-symbols-outlined text-pink-500">stream</span></div>
+<div class="size-10 md:size-12 bg-white dark:bg-slate-800 rounded-lg shadow-sm flex items-center justify-center grayscale hover:grayscale-0 transition-all cursor-pointer"><span class="material-symbols-outlined text-cyan-600">cloud_upload</span></div>
+</div>
+</div>
+<!-- Card 3: Team Roles (Small - 2 columns) -->
+<div class="lg:col-span-2 bg-white dark:bg-slate-900 rounded-xl border border-[#dbe0e6] dark:border-slate-800 p-6 group hover:-translate-y-1 transition-all duration-300">
+<div class="size-10 rounded-lg bg-primary/10 flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-primary">handshake</span>
+</div>
+<h4 class="text-[#111418] dark:text-white text-lg font-bold mb-2">Team roles</h4>
+<p class="text-[#617589] dark:text-slate-400 text-sm leading-relaxed">
+                                Precise governance with role-based access control. On-chain accountability for critical decisions.
+                            </p>
+</div>
+<!-- Card 4: Progress (Small - 2 columns) -->
+<div class="lg:col-span-2 bg-white dark:bg-slate-900 rounded-xl border border-[#dbe0e6] dark:border-slate-800 p-6 group hover:-translate-y-1 transition-all duration-300">
+<div class="size-10 rounded-lg bg-primary/10 flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-primary">language</span>
+</div>
+<h4 class="text-[#111418] dark:text-white text-lg font-bold mb-2">Progress</h4>
+<p class="text-[#617589] dark:text-slate-400 text-sm leading-relaxed">
+                                Monitor global milestones in real-time. Transparent metrics for investors and internal stakeholders.
+                            </p>
+</div>
+<!-- Card 5: View things your way (Small - 2 columns) -->
+<div class="lg:col-span-2 bg-white dark:bg-slate-900 rounded-xl border border-[#dbe0e6] dark:border-slate-800 p-6 group hover:-translate-y-1 transition-all duration-300">
+<div class="size-10 rounded-lg bg-primary/10 flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-primary">view_quilt</span>
+</div>
+<h4 class="text-[#111418] dark:text-white text-lg font-bold mb-2">View things your way</h4>
+<p class="text-[#617589] dark:text-slate-400 text-sm leading-relaxed">
+                                Custom layouts from Kanban to Gantt. Dynamic views that adapt to your team's specific workflow.
+                            </p>
+</div>
+</div>
+<!-- Bottom CTA -->
+<div class="mt-20 p-10 bg-primary rounded-2xl flex flex-col md:flex-row items-center justify-between gap-8 text-white">
+<div>
+<h2 class="text-3xl font-extrabold mb-2">Ready to accelerate your runway?</h2>
+<p class="text-primary/20 text-white/80">Join 500+ startups building the future on our platform.</p>
+</div>
+<div class="flex gap-4 w-full md:w-auto">
+<button class="bg-white text-primary px-8 py-4 rounded-lg font-bold hover:bg-gray-100 transition-colors w-full md:w-auto">Get Started Free</button>
+<button class="bg-primary/20 border border-white/30 text-white px-8 py-4 rounded-lg font-bold hover:bg-primary/30 transition-colors w-full md:w-auto">Request Demo</button>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-white dark:bg-background-dark border-t border-[#f0f2f4] dark:border-slate-800 py-12">
+<div class="max-w-[1200px] mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
+<div class="flex items-center gap-3">
+<div class="size-5 text-primary">
+<svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path clip-rule="evenodd" d="M24 4H42V17.3333V30.6667H24V44H6V30.6667V17.3333H24V44Z" fill="currentColor" fill-rule="evenodd"></path>
+</svg>
+</div>
+<span class="font-bold text-[#111418] dark:text-white">Runway © 2024</span>
+</div>
+<div class="flex gap-8">
+<a class="text-sm text-[#617589] hover:text-primary" href="#">Privacy</a>
+<a class="text-sm text-[#617589] hover:text-primary" href="#">Terms</a>
+<a class="text-sm text-[#617589] hover:text-primary" href="#">Status</a>
+<a class="text-sm text-[#617589] hover:text-primary" href="#">Security</a>
+</div>
+</div>
+</footer>
+</div>
+</div>
+</body></html>

@@ -1,0 +1,763 @@
+import Link from "next/link";
+import { RunwayLogo } from "@/components/RunwayLogo";
+
+export default function LandingPage() {
+  return (
+    <div className="relative min-h-screen overflow-x-hidden hero-gradient">
+      {/* ========== SHARED HEADER (Stitch: hero + execution) ========== */}
+      <header className="sticky top-0 z-50 w-full border-b border-[#f0f2f4] dark:border-white/10 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md px-6 md:px-10 py-3">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-2 text-primary">
+            <div className="bg-primary p-1.5 rounded-lg text-white">
+              <RunwayLogo className="size-6" />
+            </div>
+            <h2 className="text-[#111418] dark:text-white text-xl font-extrabold tracking-tight">
+              Runway
+            </h2>
+          </Link>
+          <nav className="hidden md:flex flex-1 justify-center gap-8">
+            <Link className="text-[#111418] dark:text-gray-300 text-sm font-semibold hover:text-primary transition-colors" href="#execution">
+              Product
+            </Link>
+            <Link className="text-[#111418] dark:text-gray-300 text-sm font-semibold hover:text-primary transition-colors" href="#features">
+              Features
+            </Link>
+            <Link className="text-[#111418] dark:text-gray-300 text-sm font-semibold hover:text-primary transition-colors" href="#insights">
+              Insights
+            </Link>
+            <Link className="text-[#111418] dark:text-gray-300 text-sm font-semibold hover:text-primary transition-colors" href="#ai">
+              AI
+            </Link>
+            <Link className="text-[#111418] dark:text-gray-300 text-sm font-semibold hover:text-primary transition-colors" href="#trust">
+              Trust
+            </Link>
+          </nav>
+          <div className="flex gap-3">
+            <Link
+              href="/signup"
+              className="hidden sm:flex min-w-[84px] cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold transition-all hover:bg-primary/90"
+            >
+              Try Runway free
+            </Link>
+            <Link
+              href="/login"
+              className="flex min-w-[84px] cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-[#f0f2f4] dark:bg-white/10 text-[#111418] dark:text-white text-sm font-bold transition-all hover:bg-gray-200 dark:hover:bg-white/20"
+            >
+              Login
+            </Link>
+          </div>
+        </div>
+      </header>
+
+      {/* ========== 1. HERO (Stitch: hero_section) — plain image as background ========== */}
+      <main
+        className="relative min-h-[80vh] bg-cover bg-center bg-no-repeat text-center"
+        style={{ backgroundImage: "url(/hero-bg.png)" }}
+      >
+        <div className="absolute inset-0 bg-white/25 dark:bg-background-dark/40 pointer-events-none" aria-hidden />
+        <div className="relative max-w-[1200px] mx-auto px-6 pt-20 pb-12">
+        <div className="max-w-3xl mx-auto flex flex-col items-center gap-6">
+          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight leading-[1.1] text-gray-900 dark:text-white">
+            Give your startup a real Runway
+          </h1>
+          <p className="text-lg md:text-xl text-gray-600 dark:text-gray-400 font-medium leading-relaxed max-w-2xl">
+            Plan weekly goals, follow through on them, and build a clear record of execution because progress should be visible, not assumed.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 mt-4">
+            <Link
+              href="/signup"
+              className="bg-black dark:bg-white dark:text-black text-white px-8 py-4 rounded-xl text-lg font-bold transition-transform hover:scale-105 text-center"
+            >
+              Try Runway free
+            </Link>
+            <Link
+              href="#features"
+              className="border-2 border-gray-200 dark:border-gray-700 px-8 py-4 rounded-xl text-lg font-bold hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-center"
+            >
+              See features
+            </Link>
+          </div>
+        </div>
+
+        {/* Dashboard mockup — startup semantics (Stitch hero); slides up from back */}
+        <div className="mt-20 relative mx-auto max-w-5xl rounded-2xl border border-gray-200 bg-white shadow-2xl overflow-hidden dark:border-gray-700 dark:bg-background-dark animate-slide-up-from-back opacity-0">
+          <div className="h-10 bg-gray-50 border-b border-gray-200 dark:bg-gray-800/50 dark:border-gray-700 flex items-center px-4 gap-2">
+            <div className="size-3 rounded-full bg-red-400" />
+            <div className="size-3 rounded-full bg-yellow-400" />
+            <div className="size-3 rounded-full bg-green-400" />
+          </div>
+          <div className="flex h-[500px]">
+            <aside className="w-60 border-r border-gray-100 p-6 hidden md:flex flex-col gap-8 text-left dark:border-gray-800">
+              <div className="space-y-4">
+                <div className="h-3 w-3/4 bg-gray-100 rounded-full dark:bg-gray-800" />
+                <div className="h-3 w-1/2 bg-gray-100 rounded-full dark:bg-gray-800" />
+                <div className="h-3 w-2/3 bg-primary/20 rounded-full" />
+              </div>
+              <div className="space-y-4 mt-auto">
+                <div className="h-8 w-full bg-gray-50 rounded dark:bg-gray-800" />
+              </div>
+            </aside>
+            <div className="flex-1 p-8 text-left bg-[#fcfcfd] dark:bg-background-dark">
+              <div className="flex justify-between items-center mb-10">
+                <div>
+                  <h3 className="text-2xl font-bold">Welcome back, Founder</h3>
+                  <p className="text-gray-500 text-sm">Your startup workspace</p>
+                </div>
+                <div className="flex gap-3">
+                  <div className="size-10 rounded-full bg-gray-200 dark:bg-gray-700" />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-6 mb-10">
+                <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
+                  <p className="text-sm font-semibold text-gray-500 mb-1">Startup workspaces</p>
+                  <p className="text-4xl font-extrabold text-primary">3</p>
+                </div>
+                <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
+                  <p className="text-sm font-semibold text-gray-500 mb-1">Active sprints</p>
+                  <p className="text-4xl font-extrabold">2</p>
+                </div>
+              </div>
+              <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 flex-1">
+                <div className="flex justify-between items-end mb-6">
+                  <p className="text-sm font-semibold">Execution over time</p>
+                  <span className="text-xs text-gray-400">Past 6 sprints</span>
+                </div>
+                <div className="flex items-end justify-between h-32 gap-3">
+                  <div className="w-full bg-gray-100 dark:bg-gray-700 rounded-t-lg h-1/3" />
+                  <div className="w-full bg-gray-100 dark:bg-gray-700 rounded-t-lg h-1/2" />
+                  <div className="w-full bg-primary rounded-t-lg h-3/4" />
+                  <div className="w-full bg-gray-100 dark:bg-gray-700 rounded-t-lg h-2/3" />
+                  <div className="w-full bg-gray-100 dark:bg-gray-700 rounded-t-lg h-5/6" />
+                  <div className="w-full bg-primary/40 rounded-t-lg h-2/4" />
+                  <div className="w-full bg-primary rounded-t-lg h-full" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        </div>
+
+        {/* Social proof (Stitch hero footer row) */}
+        <section className="max-w-[1200px] mx-auto px-6 py-20">
+          <h4 className="text-center text-xs font-bold uppercase tracking-[0.2em] text-gray-400 mb-12">
+            Built for early teams
+          </h4>
+          <div className="flex flex-wrap justify-center items-center gap-12 lg:gap-20 opacity-40 grayscale contrast-125">
+            <div className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-3xl">payments</span>
+              <span className="text-xl font-bold tracking-tighter">Stripe</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-3xl">movie</span>
+              <span className="text-xl font-bold tracking-tighter">Netflix</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-3xl">language</span>
+              <span className="text-xl font-bold tracking-tighter">Google</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-3xl">token</span>
+              <span className="text-xl font-bold tracking-tighter">Coinbase</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-3xl">category</span>
+              <span className="text-xl font-bold tracking-tighter">Airbnb</span>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      {/* ========== 2. EXECUTION SECTION (Stitch: execution_section) ========== */}
+      <section id="execution" className="bg-background-light dark:bg-background-dark border-t border-[#f0f2f4] dark:border-white/10">
+        <div className="max-w-7xl mx-auto px-6 md:px-10 py-16 md:py-24">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <div className="relative group">
+              <div className="absolute -inset-4 bg-primary/5 dark:bg-primary/10 rounded-3xl -z-10 transition-transform group-hover:scale-[1.02]" />
+              <div className="bg-white dark:bg-[#1a2530] border border-gray-100 dark:border-white/5 rounded-2xl shadow-2xl overflow-hidden">
+                <div className="px-6 py-4 border-b border-gray-100 dark:border-white/5 flex items-center justify-between">
+                  <h3 className="font-bold text-lg">Startup workspace</h3>
+                  <div className="flex gap-2">
+                    <span className="size-3 rounded-full bg-red-400" />
+                    <span className="size-3 rounded-full bg-yellow-400" />
+                    <span className="size-3 rounded-full bg-green-400" />
+                  </div>
+                </div>
+                <div className="px-6 border-b border-gray-100 dark:border-white/5 bg-gray-50/50 dark:bg-white/5">
+                  <div className="flex gap-6">
+                    <span className="border-b-2 border-primary text-primary py-4 text-sm font-bold">Ongoing</span>
+                    <span className="border-b-2 border-transparent text-gray-500 dark:text-gray-400 py-4 text-sm font-bold">In Review</span>
+                    <span className="border-b-2 border-transparent text-gray-500 dark:text-gray-400 py-4 text-sm font-bold">Completed</span>
+                  </div>
+                </div>
+                <div className="p-6 space-y-4">
+                  <div className="flex items-center justify-between p-4 rounded-xl border border-gray-100 dark:border-white/5 bg-white dark:bg-background-dark hover:border-primary/30 transition-colors shadow-sm">
+                    <div className="flex items-center gap-4">
+                      <div className="size-12 rounded-full bg-primary/10 flex items-center justify-center">
+                        <span className="material-symbols-outlined text-primary">rocket_launch</span>
+                      </div>
+                      <div>
+                        <p className="font-bold text-[#111418] dark:text-white">Alpha launch prep</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-semibold">MVP Milestone</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <span className="hidden sm:inline-flex px-3 py-1 rounded-full bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 text-xs font-bold">High Priority</span>
+                      <div className="size-6 rounded-full bg-green-500 flex items-center justify-center">
+                        <span className="material-symbols-outlined text-white text-[16px]">check</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between p-4 rounded-xl border border-gray-100 dark:border-white/5 bg-white dark:bg-background-dark hover:border-primary/30 transition-colors shadow-sm">
+                    <div className="flex items-center gap-4">
+                      <div className="size-12 rounded-full bg-primary/10 flex items-center justify-center">
+                        <span className="material-symbols-outlined text-primary">groups</span>
+                      </div>
+                      <div>
+                        <p className="font-bold text-[#111418] dark:text-white">Customer discovery</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-semibold">Validation</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <span className="hidden sm:inline-flex px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-xs font-bold">Active</span>
+                      <div className="size-6 rounded-full bg-green-500 flex items-center justify-center">
+                        <span className="material-symbols-outlined text-white text-[16px]">check</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between p-4 rounded-xl border border-gray-100 dark:border-white/5 bg-white dark:bg-background-dark opacity-50 grayscale hover:grayscale-0 transition-all">
+                    <div className="flex items-center gap-4">
+                      <div className="size-12 rounded-full bg-primary/10 flex items-center justify-center">
+                        <span className="material-symbols-outlined text-primary">analytics</span>
+                      </div>
+                      <div>
+                        <p className="font-bold">Sprint analytics</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">Execution metrics</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="absolute -bottom-6 -right-6 hidden xl:block p-4 bg-white dark:bg-[#1a2530] border border-gray-100 dark:border-white/5 rounded-xl shadow-xl">
+                <div className="flex items-center gap-3">
+                  <div className="size-8 rounded-lg bg-primary/20 flex items-center justify-center">
+                    <span className="material-symbols-outlined text-primary text-xl">account_tree</span>
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-bold text-gray-400 uppercase">On-Chain Ledger</p>
+                    <p className="text-xs font-bold">Execution Verified</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="flex flex-col gap-8">
+              <div className="space-y-4">
+                <p className="text-primary font-extrabold text-sm tracking-[0.2em] uppercase">Execution Management</p>
+                <h2 className="text-[#111418] dark:text-white text-4xl md:text-5xl lg:text-6xl font-extrabold leading-[1.1] tracking-tight">
+                  Plan, track and move your startup forward
+                </h2>
+                <p className="text-lg text-[#617589] dark:text-gray-400 leading-relaxed max-w-[540px]">
+                  Stay organized and move faster with structured workspaces designed for high-growth startups. Manage your entire execution pipeline with AI-powered insights and verifiable blockchain milestones.
+                </p>
+              </div>
+              <div className="flex flex-col gap-10">
+                <Link
+                  href="/signup"
+                  className="flex min-w-[200px] cursor-pointer items-center justify-center rounded-lg h-14 px-8 bg-[#111418] dark:bg-white text-white dark:text-[#111418] text-lg font-bold transition-all hover:scale-[1.02] hover:shadow-lg active:scale-95"
+                >
+                  Try Runway free
+                </Link>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="flex items-center gap-3 p-3 rounded-lg border border-gray-100 dark:border-white/5 bg-white/50 dark:bg-white/5 hover:bg-white dark:hover:bg-white/10 transition-colors">
+                    <div className="size-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                      <span className="material-symbols-outlined">checklist</span>
+                    </div>
+                    <span className="font-bold text-sm">Tasks</span>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 rounded-lg border border-gray-100 dark:border-white/5 bg-white/50 dark:bg-white/5 hover:bg-white dark:hover:bg-white/10 transition-colors">
+                    <div className="size-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                      <span className="material-symbols-outlined">update</span>
+                    </div>
+                    <span className="font-bold text-sm">Weekly Tracking</span>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 rounded-lg border border-gray-100 dark:border-white/5 bg-white/50 dark:bg-white/5 hover:bg-white dark:hover:bg-white/10 transition-colors">
+                    <div className="size-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                      <span className="material-symbols-outlined">reviews</span>
+                    </div>
+                    <span className="font-bold text-sm">Validation feedback</span>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 rounded-lg border border-gray-100 dark:border-white/5 bg-white/50 dark:bg-white/5 hover:bg-white dark:hover:bg-white/10 transition-colors">
+                    <div className="size-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                      <span className="material-symbols-outlined">insights</span>
+                    </div>
+                    <span className="font-bold text-sm">Progress Analytics</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ========== 3. FEATURES GRID (Stitch: features_grid) ========== */}
+      <section id="features" className="flex-1 grid-bg">
+        <div className="max-w-[1200px] mx-auto px-6 py-16 md:py-24">
+          <div className="text-center mb-16">
+            <span className="text-primary font-bold text-sm tracking-[0.2em] uppercase mb-4 block">Capabilities</span>
+            <h2 className="text-[#111418] dark:text-white text-4xl md:text-5xl font-extrabold leading-tight tracking-[-0.02em]">
+              Built for early stage founders
+            </h2>
+            <p className="mt-4 text-[#617589] dark:text-slate-400 text-lg max-w-2xl mx-auto">
+              The execution layer for your startup. From seed to scale, manage every milestone with AI-enhanced precision and blockchain-grade security.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6">
+            <div className="lg:col-span-3 bg-white dark:bg-slate-900 rounded-xl border border-[#dbe0e6] dark:border-slate-800 p-8 flex flex-col justify-between group hover:shadow-xl transition-all duration-300">
+              <div className="mb-8">
+                <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-6">
+                  <span className="material-symbols-outlined text-primary">timeline</span>
+                </div>
+                <h3 className="text-[#111418] dark:text-white text-2xl font-bold mb-3">Execution &amp; milestone tracking</h3>
+                <p className="text-[#617589] dark:text-slate-400">Track every detail from MVP to scale with automated status reporting and AI forecasting.</p>
+              </div>
+              <div className="relative w-full aspect-[4/3] rounded-lg overflow-hidden border border-[#f0f2f4] dark:border-slate-700 bg-gray-50 dark:bg-slate-950 p-4 shadow-inner">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between p-3 bg-white dark:bg-slate-900 rounded border border-gray-100 dark:border-slate-800 shadow-sm">
+                    <div className="flex items-center gap-3">
+                      <div className="w-2 h-2 rounded-full bg-green-500" />
+                      <span className="text-sm font-bold">Phase 1: MVP Design</span>
+                    </div>
+                    <span className="px-2 py-1 text-[10px] bg-primary/10 text-primary font-bold rounded uppercase">Completed</span>
+                  </div>
+                  <div className="flex items-center justify-between p-3 bg-white dark:bg-slate-900 rounded border border-gray-100 dark:border-slate-800 shadow-sm ring-2 ring-primary/20">
+                    <div className="flex items-center gap-3">
+                      <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                      <span className="text-sm font-bold">Phase 2: Alpha Launch</span>
+                    </div>
+                    <span className="px-2 py-1 text-[10px] bg-primary text-white font-bold rounded uppercase">Active</span>
+                  </div>
+                  <div className="flex items-center justify-between p-3 bg-white dark:bg-slate-900 rounded border border-gray-100 dark:border-slate-800 shadow-sm opacity-60">
+                    <div className="flex items-center gap-3">
+                      <div className="w-2 h-2 rounded-full bg-gray-400" />
+                      <span className="text-sm font-bold">Phase 3: Beta Scale</span>
+                    </div>
+                    <span className="px-2 py-1 text-[10px] bg-gray-100 dark:bg-slate-800 text-gray-500 font-bold rounded uppercase">Upcoming</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="lg:col-span-3 bg-white dark:bg-slate-900 rounded-xl border border-[#dbe0e6] dark:border-slate-800 p-8 flex flex-col justify-between group hover:shadow-xl transition-all duration-300">
+              <div className="mb-8">
+                <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-6">
+                  <span className="material-symbols-outlined text-primary">hub</span>
+                </div>
+                <h3 className="text-[#111418] dark:text-white text-2xl font-bold mb-3">Integrates seamlessly</h3>
+                <p className="text-[#617589] dark:text-slate-400">Connect your favorite tools. From Slack and Jira to Loom and GitHub, stay in sync without switching tabs.</p>
+              </div>
+              <div className="grid grid-cols-4 gap-4 md:gap-6 p-4 bg-[#f6f7f8] dark:bg-slate-950 rounded-lg h-full max-h-[280px] content-center items-center justify-items-center">
+                <div className="size-10 md:size-12 bg-white dark:bg-slate-800 rounded-lg shadow-sm flex items-center justify-center grayscale hover:grayscale-0 transition-all cursor-pointer"><span className="material-symbols-outlined text-blue-500">alternate_email</span></div>
+                <div className="size-10 md:size-12 bg-white dark:bg-slate-800 rounded-lg shadow-sm flex items-center justify-center grayscale hover:grayscale-0 transition-all cursor-pointer"><span className="material-symbols-outlined text-blue-600">terminal</span></div>
+                <div className="size-10 md:size-12 bg-white dark:bg-slate-800 rounded-lg shadow-sm flex items-center justify-center grayscale hover:grayscale-0 transition-all cursor-pointer"><span className="material-symbols-outlined text-orange-500">inventory_2</span></div>
+                <div className="size-10 md:size-12 bg-white dark:bg-slate-800 rounded-lg shadow-sm flex items-center justify-center grayscale hover:grayscale-0 transition-all cursor-pointer"><span className="material-symbols-outlined text-indigo-500">description</span></div>
+                <div className="size-10 md:size-12 bg-white dark:bg-slate-800 rounded-lg shadow-sm flex items-center justify-center grayscale hover:grayscale-0 transition-all cursor-pointer"><span className="material-symbols-outlined text-red-500">chat</span></div>
+                <div className="size-10 md:size-12 bg-white dark:bg-slate-800 rounded-lg shadow-sm flex items-center justify-center grayscale hover:grayscale-0 transition-all cursor-pointer"><span className="material-symbols-outlined text-green-500">videocam</span></div>
+                <div className="size-10 md:size-12 bg-white dark:bg-slate-800 rounded-lg shadow-sm flex items-center justify-center grayscale hover:grayscale-0 transition-all cursor-pointer"><span className="material-symbols-outlined text-purple-500">account_tree</span></div>
+                <div className="size-10 md:size-12 bg-white dark:bg-slate-800 rounded-lg shadow-sm flex items-center justify-center grayscale hover:grayscale-0 transition-all cursor-pointer"><span className="material-symbols-outlined text-blue-400">code</span></div>
+                <div className="size-10 md:size-12 bg-white dark:bg-slate-800 rounded-lg shadow-sm flex items-center justify-center grayscale hover:grayscale-0 transition-all cursor-pointer"><span className="material-symbols-outlined text-gray-800">grid_view</span></div>
+                <div className="size-10 md:size-12 bg-white dark:bg-slate-800 rounded-lg shadow-sm flex items-center justify-center grayscale hover:grayscale-0 transition-all cursor-pointer"><span className="material-symbols-outlined text-yellow-600">task_alt</span></div>
+                <div className="size-10 md:size-12 bg-white dark:bg-slate-800 rounded-lg shadow-sm flex items-center justify-center grayscale hover:grayscale-0 transition-all cursor-pointer"><span className="material-symbols-outlined text-pink-500">stream</span></div>
+                <div className="size-10 md:size-12 bg-white dark:bg-slate-800 rounded-lg shadow-sm flex items-center justify-center grayscale hover:grayscale-0 transition-all cursor-pointer"><span className="material-symbols-outlined text-cyan-600">cloud_upload</span></div>
+              </div>
+            </div>
+            <div className="lg:col-span-2 bg-white dark:bg-slate-900 rounded-xl border border-[#dbe0e6] dark:border-slate-800 p-6 group hover:-translate-y-1 transition-all duration-300">
+              <div className="size-10 rounded-lg bg-primary/10 flex items-center justify-center mb-6">
+                <span className="material-symbols-outlined text-primary">handshake</span>
+              </div>
+              <h4 className="text-[#111418] dark:text-white text-lg font-bold mb-2">Team roles</h4>
+              <p className="text-[#617589] dark:text-slate-400 text-sm leading-relaxed">
+                Precise governance with role-based access control. On-chain accountability for critical decisions.
+              </p>
+            </div>
+            <div className="lg:col-span-2 bg-white dark:bg-slate-900 rounded-xl border border-[#dbe0e6] dark:border-slate-800 p-6 group hover:-translate-y-1 transition-all duration-300">
+              <div className="size-10 rounded-lg bg-primary/10 flex items-center justify-center mb-6">
+                <span className="material-symbols-outlined text-primary">language</span>
+              </div>
+              <h4 className="text-[#111418] dark:text-white text-lg font-bold mb-2">Progress</h4>
+              <p className="text-[#617589] dark:text-slate-400 text-sm leading-relaxed">
+                Monitor global milestones in real-time. Transparent metrics for investors and internal stakeholders.
+              </p>
+            </div>
+            <div className="lg:col-span-2 bg-white dark:bg-slate-900 rounded-xl border border-[#dbe0e6] dark:border-slate-800 p-6 group hover:-translate-y-1 transition-all duration-300">
+              <div className="size-10 rounded-lg bg-primary/10 flex items-center justify-center mb-6">
+                <span className="material-symbols-outlined text-primary">view_quilt</span>
+              </div>
+              <h4 className="text-[#111418] dark:text-white text-lg font-bold mb-2">View things your way</h4>
+              <p className="text-[#617589] dark:text-slate-400 text-sm leading-relaxed">
+                Custom layouts from Kanban to Gantt. Dynamic views that adapt to your team&apos;s specific workflow.
+              </p>
+            </div>
+          </div>
+          <div className="mt-20 p-10 bg-primary rounded-2xl flex flex-col md:flex-row items-center justify-between gap-8 text-white">
+            <div>
+              <h2 className="text-3xl font-extrabold mb-2">Ready to accelerate your runway?</h2>
+              <p className="text-primary/20 text-white/80">Join 500+ startups building the future on our platform.</p>
+            </div>
+            <div className="flex gap-4 w-full md:w-auto">
+              <Link href="/signup" className="bg-white text-primary px-8 py-4 rounded-lg font-bold hover:bg-gray-100 transition-colors w-full md:w-auto text-center">Get Started Free</Link>
+              <Link href="#trust" className="bg-primary/20 border border-white/30 text-white px-8 py-4 rounded-lg font-bold hover:bg-primary/30 transition-colors w-full md:w-auto text-center">Request Demo</Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ========== 4. INSIGHTS SECTION (Stitch: insights_section) ========== */}
+      <section id="insights" className="bg-background-light dark:bg-background-dark border-t border-[#f0f2f4] dark:border-white/10">
+        <div className="px-4 md:px-20 lg:px-40 flex flex-1 justify-center py-12 md:py-24">
+          <div className="flex flex-col lg:flex-row gap-12 lg:gap-20 items-center max-w-[1200px] flex-1">
+            <div className="flex flex-col flex-1 gap-8 order-2 lg:order-1">
+              <div className="flex flex-col gap-4">
+                <span className="text-primary text-sm font-bold tracking-widest uppercase">Progress &amp; Insights</span>
+                <h2 className="text-[#111418] dark:text-white tracking-tight text-[32px] md:text-[44px] font-extrabold leading-tight lg:max-w-[500px]">
+                  Understand what&apos;s working and what isn&apos;t
+                </h2>
+                <p className="text-[#617589] dark:text-gray-400 text-lg font-normal leading-relaxed lg:max-w-[520px]">
+                  Get clear indicators of your startup&apos;s health and spot risks before they scale with our AI-driven insights layer. Monitor every milestone with blockchain-verified precision.
+                </p>
+              </div>
+              <Link
+                href="/dashboard"
+                className="flex min-w-[200px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-14 px-6 bg-[#111418] dark:bg-primary text-white text-base font-bold leading-normal transition-all hover:bg-opacity-90 active:scale-95 shadow-lg w-fit"
+              >
+                View analytics dashboard
+              </Link>
+              <div className="flex flex-wrap gap-3 mt-4">
+                <div className="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white dark:bg-[#1c2a38] px-5 border border-[#dbe0e6] dark:border-gray-700 shadow-sm hover:border-primary cursor-default">
+                  <span className="material-symbols-outlined text-primary text-[20px]">task_alt</span>
+                  <p className="text-[#111418] dark:text-gray-200 text-sm font-semibold">Tasks Completed</p>
+                </div>
+                <div className="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white dark:bg-[#1c2a38] px-5 border border-[#dbe0e6] dark:border-gray-700 shadow-sm hover:border-primary cursor-default">
+                  <span className="material-symbols-outlined text-primary text-[20px]">trending_up</span>
+                  <p className="text-[#111418] dark:text-gray-200 text-sm font-semibold">Sprint Reliability</p>
+                </div>
+                <div className="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white dark:bg-[#1c2a38] px-5 border border-[#dbe0e6] dark:border-gray-700 shadow-sm hover:border-primary cursor-default">
+                  <span className="material-symbols-outlined text-primary text-[20px]">insights</span>
+                  <p className="text-[#111418] dark:text-gray-200 text-sm font-semibold">Milestones</p>
+                </div>
+                <div className="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white dark:bg-[#1c2a38] px-5 border border-[#dbe0e6] dark:border-gray-700 shadow-sm hover:border-primary cursor-default">
+                  <span className="material-symbols-outlined text-primary text-[20px]">hub</span>
+                  <p className="text-[#111418] dark:text-gray-200 text-sm font-semibold">Integrations</p>
+                </div>
+              </div>
+            </div>
+            <div className="flex-1 w-full max-w-[560px] order-1 lg:order-2">
+              <div className="relative bg-primary/10 dark:bg-primary/5 rounded-[2rem] p-4 md:p-8">
+                <div className="bg-white dark:bg-[#16222e] rounded-2xl shadow-2xl p-6 flex flex-col gap-8 border border-white dark:border-gray-800">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-[#111418] dark:text-white text-lg font-bold">Execution progress</h3>
+                    <div className="flex gap-2">
+                      <div className="size-2 rounded-full bg-[#e2e8f0] dark:bg-gray-700" />
+                      <div className="size-2 rounded-full bg-primary" />
+                      <div className="size-2 rounded-full bg-[#e2e8f0] dark:bg-gray-700" />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    <div className="flex flex-col gap-1">
+                      <p className="text-[#617589] dark:text-gray-400 text-[11px] font-bold uppercase tracking-wider">Tasks</p>
+                      <p className="text-[#111418] dark:text-white text-xl font-extrabold">84%</p>
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <p className="text-[#617589] dark:text-gray-400 text-[11px] font-bold uppercase tracking-wider">Milestones</p>
+                      <p className="text-[#111418] dark:text-white text-xl font-extrabold">12/15</p>
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <p className="text-[#617589] dark:text-gray-400 text-[11px] font-bold uppercase tracking-wider">Blocked</p>
+                      <p className="text-red-500 text-xl font-extrabold">2</p>
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <p className="text-[#617589] dark:text-gray-400 text-[11px] font-bold uppercase tracking-wider">Score</p>
+                      <p className="text-primary text-xl font-extrabold">9.2</p>
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-4">
+                    <div className="flex items-end justify-between">
+                      <div>
+                        <p className="text-[#617589] dark:text-gray-400 text-sm font-medium">Execution vs plan</p>
+                        <p className="text-[#111418] dark:text-white text-2xl font-bold">Sprint 6</p>
+                      </div>
+                      <div className="flex items-center gap-1 text-[#078838] bg-[#078838]/10 px-2 py-0.5 rounded-lg">
+                        <span className="material-symbols-outlined text-[16px] font-bold">trending_up</span>
+                        <span className="text-xs font-bold">+12.5%</span>
+                      </div>
+                    </div>
+                    <div className="h-24 w-full flex items-end justify-between gap-1">
+                      <div className="w-full bg-primary/30 rounded-t min-h-[20%] h-1/3" />
+                      <div className="w-full bg-primary/50 rounded-t min-h-[20%] h-1/2" />
+                      <div className="w-full bg-primary rounded-t min-h-[20%] h-3/4" />
+                      <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-t min-h-[20%] h-2/3" />
+                      <div className="w-full bg-primary/70 rounded-t min-h-[20%] h-5/6" />
+                      <div className="w-full bg-primary rounded-t min-h-[20%] h-full" />
+                    </div>
+                    <div className="flex justify-between mt-2 px-1 text-[10px] font-bold text-[#94a3b8] uppercase">
+                      <span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span>
+                    </div>
+                  </div>
+                  <div className="pt-4 border-t border-[#f0f2f4] dark:border-gray-800 flex justify-between items-center">
+                    <div className="flex -space-x-2">
+                      <div className="size-7 rounded-full bg-slate-200 dark:bg-gray-700 border-2 border-white dark:border-[#16222e]" />
+                      <div className="size-7 rounded-full bg-slate-200 dark:bg-gray-700 border-2 border-white dark:border-[#16222e]" />
+                      <div className="size-7 rounded-full bg-primary border-2 border-white dark:border-[#16222e] flex items-center justify-center">
+                        <span className="text-[10px] text-white font-bold">+4</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <span className="material-symbols-outlined text-[#617589] dark:text-gray-400 text-sm">history</span>
+                      <span className="text-[#617589] dark:text-gray-400 text-xs">Updated 2m ago</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="absolute -bottom-4 -left-4 md:-left-12 bg-white dark:bg-[#1c2a38] border border-red-100 dark:border-red-900 shadow-xl rounded-xl p-4 flex items-center gap-4 max-w-[200px]">
+                  <div className="size-10 rounded-lg bg-red-100 dark:bg-red-950 flex items-center justify-center text-red-600">
+                    <span className="material-symbols-outlined">warning</span>
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-bold text-red-600 uppercase tracking-tight">Risk Detected</p>
+                    <p className="text-xs font-semibold text-[#111418] dark:text-white">Runway Gap High</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ========== 5. AI LAYER (Stitch: ai_layer) ========== */}
+      <section id="ai" className="bg-background-light dark:bg-background-dark border-t border-gray-200/50 dark:border-gray-800">
+        <section className="relative overflow-hidden py-16 lg:py-24">
+          <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent" />
+          <div className="mx-auto max-w-4xl px-6 text-center">
+            <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 mb-8">
+              <span className="material-symbols-outlined text-[16px] text-primary">auto_awesome</span>
+              <span className="text-xs font-bold uppercase tracking-widest text-primary">The Intelligence Layer</span>
+            </div>
+            <h2 className="text-4xl font-extrabold tracking-tight text-[#111418] dark:text-white sm:text-6xl mb-6 leading-[1.1]">
+              AI-Powered Intelligence
+            </h2>
+            <p className="mx-auto max-w-2xl text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
+              The execution and management platform for high-growth startups. Leverage our AI layer to navigate complexity and ship faster.
+            </p>
+          </div>
+        </section>
+        <div className="mx-auto max-w-7xl px-6 pb-24">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+            <div className="group relative flex flex-col rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-[#16202c] p-8 shadow-sm transition-all hover:border-primary/50 hover:shadow-xl dark:hover:border-primary/50">
+              <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 text-primary transition-transform group-hover:scale-110">
+                <span className="material-symbols-outlined text-[32px]">insights</span>
+              </div>
+              <h3 className="mb-3 text-xl font-bold text-[#111418] dark:text-white">AI-assisted execution insights</h3>
+              <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+                Identify stalled milestones, repeated blockers, and execution risks based on task and sprint data. Our models predict delays before they happen.
+              </p>
+              <div className="mt-8 flex items-center gap-2 text-sm font-bold text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+                Learn more <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+              </div>
+            </div>
+            <div className="group relative flex flex-col rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-[#16202c] p-8 shadow-sm transition-all hover:border-primary/50 hover:shadow-xl dark:hover:border-primary/50">
+              <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 text-primary transition-transform group-hover:scale-110">
+                <span className="material-symbols-outlined text-[32px]">biotech</span>
+              </div>
+              <h3 className="mb-3 text-xl font-bold text-[#111418] dark:text-white">Validation signal analysis</h3>
+              <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+                Summarize feedback trends and highlight weak assumptions from qualitative inputs. Turn raw customer interviews into actionable roadmap items.
+              </p>
+              <div className="mt-8 flex items-center gap-2 text-sm font-bold text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+                See how it works <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+              </div>
+            </div>
+            <div className="group relative flex flex-col rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-[#16202c] p-8 shadow-sm transition-all hover:border-primary/50 hover:shadow-xl dark:hover:border-primary/50">
+              <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 text-primary transition-transform group-hover:scale-110">
+                <span className="material-symbols-outlined text-[32px]">summarize</span>
+              </div>
+              <h3 className="mb-3 text-xl font-bold text-[#111418] dark:text-white">Investor-ready summaries</h3>
+              <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+                Auto-generate a structured snapshot covering problem, execution progress, validation, and roadmap. Keep your stakeholders informed with zero effort.
+              </p>
+              <div className="mt-8 flex items-center gap-2 text-sm font-bold text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+                View samples <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="mx-auto max-w-7xl px-6 pb-24">
+          <div className="relative overflow-hidden rounded-3xl bg-[#111418] dark:bg-primary/5 p-8 md:p-16 text-center border border-white/10">
+            <div className="absolute -top-24 -left-24 h-64 w-64 rounded-full bg-primary/20 blur-3xl" />
+            <div className="absolute -bottom-24 -right-24 h-64 w-64 rounded-full bg-primary/20 blur-3xl" />
+            <h2 className="relative z-10 mb-6 text-3xl font-extrabold text-white md:text-5xl">
+              Experience the future of startup execution
+            </h2>
+            <p className="relative z-10 mx-auto mb-10 max-w-2xl text-lg text-gray-400">
+              Join the next generation of founders using AI and Blockchain to scale faster.
+            </p>
+            <div className="relative z-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+              <Link href="/signup" className="w-full sm:w-auto flex h-12 items-center justify-center rounded-lg bg-primary px-8 text-base font-bold text-white transition-all hover:scale-105 active:scale-95">
+                Get Started Now
+              </Link>
+              <Link href="#trust" className="w-full sm:w-auto flex h-12 items-center justify-center rounded-lg bg-white/10 px-8 text-base font-bold text-white backdrop-blur-md transition-all hover:bg-white/20">
+                Schedule Demo
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ========== 6. TRUST + FINAL CTA (Stitch: trust_&_final_cta) ========== */}
+      <section id="trust" className="bg-background-light dark:bg-background-dark border-t border-[#dbe0e6] dark:border-[#2d3945]">
+        <div className="max-w-[1200px] mx-auto px-4 py-20">
+          <div className="text-center mb-12">
+            <span className="text-primary font-bold text-sm tracking-widest uppercase mb-4 block">Security &amp; Transparency</span>
+            <h2 className="text-4xl md:text-5xl font-extrabold leading-tight tracking-tight text-[#111418] dark:text-white">
+              Trust Layer: Blockchain Ledger
+            </h2>
+          </div>
+          <div className="flex flex-col lg:flex-row items-center gap-10 rounded-xl border border-[#dbe0e6] dark:border-[#2d3945] bg-white dark:bg-[#1a2632] p-8 shadow-xl overflow-hidden">
+            <div className="w-full lg:w-1/2 aspect-square md:aspect-video lg:aspect-square bg-[#f0f4f8] dark:bg-[#0d141b] rounded-lg relative overflow-hidden flex items-center justify-center trust-grid">
+              <div className="z-10 bg-white dark:bg-background-dark p-6 rounded-xl border border-primary/20 shadow-2xl flex flex-col gap-4 max-w-[80%]">
+                <div className="flex items-center gap-3 border-b border-[#f0f2f4] dark:border-[#2d3945] pb-3">
+                  <span className="material-symbols-outlined text-primary">verified_user</span>
+                  <span className="font-mono text-xs font-bold opacity-70">EXECUTION_HASH_V2.0</span>
+                </div>
+                <div className="flex flex-col gap-2">
+                  <div className="h-2 w-full bg-[#f0f2f4] dark:bg-[#2d3945] rounded-full" />
+                  <div className="h-2 w-3/4 bg-[#f0f2f4] dark:bg-[#2d3945] rounded-full" />
+                  <div className="h-2 w-5/6 bg-primary/40 rounded-full" />
+                </div>
+                <div className="text-[10px] font-mono opacity-50 truncate">
+                  0x71C7656EC7ab88b098defB751B7401B5f6d8976F
+                </div>
+              </div>
+            </div>
+            <div className="w-full lg:w-1/2 flex flex-col gap-6">
+              <div className="flex flex-col gap-4">
+                <h3 className="text-2xl font-bold text-[#111418] dark:text-white">Secure Execution History</h3>
+                <p className="text-[#617589] dark:text-gray-400 text-lg leading-relaxed">
+                  Weekly sprint commitments and outcomes are cryptographically hashed and time-stamped, creating a tamper-resistant execution history that provides absolute clarity on company progress.
+                </p>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-1 gap-4 pt-4">
+                <div className="flex items-start gap-4 p-4 rounded-lg bg-background-light dark:bg-[#101922] border border-[#dbe0e6] dark:border-[#2d3945]">
+                  <div className="bg-primary/10 p-2 rounded-lg">
+                    <span className="material-symbols-outlined text-primary">rocket_launch</span>
+                  </div>
+                  <div className="flex flex-col">
+                    <h4 className="font-bold text-sm text-[#111418] dark:text-white">Innovation &amp; scalability</h4>
+                    <p className="text-xs text-[#617589] dark:text-gray-500">Build on a secure foundation</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-4 p-4 rounded-lg bg-background-light dark:bg-[#101922] border border-[#dbe0e6] dark:border-[#2d3945]">
+                  <div className="bg-primary/10 p-2 rounded-lg">
+                    <span className="material-symbols-outlined text-primary">handshake</span>
+                  </div>
+                  <div className="flex flex-col">
+                    <h4 className="font-bold text-sm text-[#111418] dark:text-white">Investor readiness</h4>
+                    <p className="text-xs text-[#617589] dark:text-gray-500">Proof of execution for VCs</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-4 p-4 rounded-lg bg-background-light dark:bg-[#101922] border border-[#dbe0e6] dark:border-[#2d3945]">
+                  <div className="bg-primary/10 p-2 rounded-lg">
+                    <span className="material-symbols-outlined text-primary">security</span>
+                  </div>
+                  <div className="flex flex-col">
+                    <h4 className="font-bold text-sm text-[#111418] dark:text-white">Real-world applicability</h4>
+                    <p className="text-xs text-[#617589] dark:text-gray-500">Practical blockchain integration</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <section className="bg-[#111418] dark:bg-black text-white py-24 px-4 overflow-hidden relative">
+          <div className="absolute inset-0 opacity-10 pointer-events-none trust-grid" />
+          <div className="max-w-[800px] mx-auto text-center relative z-10">
+            <h2 className="text-4xl md:text-6xl font-extrabold mb-6 tracking-tight leading-tight">
+              Give your startup a real Runway
+            </h2>
+            <p className="text-lg md:text-xl text-gray-400 mb-10 max-w-[600px] mx-auto">
+              Stop assuming progress. Start proving it. Join 500+ high-growth teams managing execution with cryptographic certainty.
+            </p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Link href="/signup" className="w-full sm:w-auto min-w-[200px] bg-white text-black h-14 rounded-lg text-lg font-bold hover:bg-gray-200 transition-all flex items-center justify-center">
+                Try Runway free
+              </Link>
+              <Link href="#trust" className="w-full sm:w-auto min-w-[200px] border border-white/20 h-14 rounded-lg text-lg font-bold hover:bg-white/10 transition-all flex items-center justify-center">
+                Contact Sales
+              </Link>
+            </div>
+            <p className="mt-8 text-sm text-gray-500">No credit card required. 14-day free trial.</p>
+          </div>
+        </section>
+      </section>
+
+      {/* ========== FULL FOOTER (Stitch: trust_&_final_cta footer) ========== */}
+      <footer className="bg-white dark:bg-background-dark border-t border-[#dbe0e6] dark:border-[#2d3945] pt-16 pb-8 px-10">
+        <div className="max-w-[1200px] mx-auto grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 mb-16">
+          <div className="col-span-2 lg:col-span-1">
+            <div className="flex items-center gap-2 mb-6">
+              <div className="size-6 text-primary">
+                <RunwayLogo className="size-6" />
+              </div>
+              <h2 className="text-lg font-bold text-[#111418] dark:text-white">Runway</h2>
+            </div>
+            <p className="text-sm text-[#617589] dark:text-gray-500 leading-relaxed">
+              The ultimate execution engine for modern startups. Powered by AI, secured by Blockchain.
+            </p>
+          </div>
+          <div>
+            <h4 className="font-bold mb-6 text-[#111418] dark:text-white">Product</h4>
+            <ul className="flex flex-col gap-4 text-sm text-[#617589] dark:text-gray-400">
+              <li><Link className="hover:text-primary transition-colors" href="#features">Features</Link></li>
+              <li><Link className="hover:text-primary transition-colors" href="/dashboard">Dashboard</Link></li>
+              <li><a className="hover:text-primary transition-colors" href="#">Pricing</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="font-bold mb-6 text-[#111418] dark:text-white">Resources</h4>
+            <ul className="flex flex-col gap-4 text-sm text-[#617589] dark:text-gray-400">
+              <li><a className="hover:text-primary transition-colors" href="#">Documentation</a></li>
+              <li><a className="hover:text-primary transition-colors" href="#">Blog</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="font-bold mb-6 text-[#111418] dark:text-white">Company</h4>
+            <ul className="flex flex-col gap-4 text-sm text-[#617589] dark:text-gray-400">
+              <li><a className="hover:text-primary transition-colors" href="#">About Us</a></li>
+              <li><a className="hover:text-primary transition-colors" href="#">Privacy</a></li>
+              <li><a className="hover:text-primary transition-colors" href="#">Terms</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="font-bold mb-6 text-[#111418] dark:text-white">Connect</h4>
+            <div className="flex gap-4">
+              <a className="text-[#617589] hover:text-primary transition-colors" href="#"><span className="material-symbols-outlined">share</span></a>
+              <a className="text-[#617589] hover:text-primary transition-colors" href="#"><span className="material-symbols-outlined">public</span></a>
+              <a className="text-[#617589] hover:text-primary transition-colors" href="#"><span className="material-symbols-outlined">chat</span></a>
+            </div>
+          </div>
+        </div>
+        <div className="max-w-[1200px] mx-auto flex flex-col md:flex-row justify-between items-center border-t border-[#f0f2f4] dark:border-[#2d3945] pt-8 gap-4">
+          <p className="text-xs text-[#617589] dark:text-gray-500">
+            © 2024 Runway Inc. All rights reserved. Built with precision for innovators.
+          </p>
+          <div className="flex gap-6">
+            <Link className="text-xs text-[#617589] hover:text-primary" href="#">Status</Link>
+            <Link className="text-xs text-[#617589] hover:text-primary" href="#">Cookies</Link>
+            <Link className="text-xs text-[#617589] hover:text-primary" href="#">Sitemap</Link>
+          </div>
+        </div>
+      </footer>
+
+      {/* Background decoration (Stitch hero) */}
+      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-full h-full -z-50 pointer-events-none overflow-hidden">
+        <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-primary/5 blur-[120px] rounded-full" />
+        <div className="absolute bottom-[-10%] left-[-10%] w-[30%] h-[30%] bg-primary/10 blur-[100px] rounded-full" />
+      </div>
+    </div>
+  );
+}

@@ -1,0 +1,83 @@
+rules_version = '2';
+// Runway Firestore security rules. Role-based: founder (full), team_member (limited write), investor (read-only).
+
+function isAuthenticated() {
+  return request.auth != null;
+}
+
+function getWorkspaceMemberRole(workspace) {
+  let members = workspace.data.members;
+  let uid = request.auth.uid;
+  let i = 0;
+  for (i in members) {
+    if (members[i].userId == uid) {
+      return members[i].role;
+    }
+  }
+  return null;
+}
+
+function isFounder(workspace) {
+  return getWorkspaceMemberRole(workspace) == 'founder';
+}
+
+function isTeamMemberOrFounder(workspace) {
+  let role = getWorkspaceMemberRole(workspace);
+  return role == 'founder' || role == 'team_member';
+}
+
+function isMember(workspace) {
+  return getWorkspaceMemberRole(workspace) != null;
+}
+
+match /workspaces/{workspaceId} {
+  allow read: if isAuthenticated() && isMember(get(/databases/$(database)/documents/workspaces/$(workspaceId)));
+  allow create: if isAuthenticated();
+  allow update, delete: if isAuthenticated() && isFounder(get(/databases/$(database)/documents/workspaces/$(workspaceId)));
+}
+
+match /milestones/{milestoneId} {
+  let workspaceId = resource.data.workspaceId;
+  let workspace = get(/databases/$(database)/documents/workspaces/$(workspaceId));
+  allow read: if isAuthenticated() && isMember(workspace);
+  allow create: if isAuthenticated() && isTeamMemberOrFounder(get(/databases/$(database)/documents/workspaces/$(resource.data.workspaceId)));
+  allow update, delete: if isAuthenticated() && isTeamMemberOrFounder(workspace);
+}
+
+match /tasks/{taskId} {
+  let workspaceId = resource.data.workspaceId;
+  let workspace = get(/databases/$(database)/documents/workspaces/$(workspaceId));
+  allow read: if isAuthenticated() && isMember(workspace);
+  allow create: if isAuthenticated() && isTeamMemberOrFounder(get(/databases/$(database)/documents/workspaces/$(resource.data.workspaceId)));
+  allow update: if isAuthenticated() && isTeamMemberOrFounder(workspace);
+  allow delete: if isAuthenticated() && isFounder(workspace);
+}
+
+match /sprints/{sprintId} {
+  let workspaceId = resource.data.workspaceId;
+  let workspace = get(/databases/$(database)/documents/workspaces/$(workspaceId));
+  allow read: if isAuthenticated() && isMember(workspace);
+  allow create: if isAuthenticated() && isFounder(get(/databases/$(database)/documents/workspaces/$(resource.data.workspaceId)));
+  allow update: if isAuthenticated() && isTeamMemberOrFounder(workspace);
+  allow delete: if isAuthenticated() && isFounder(workspace);
+}
+
+match /validations/{validationId} {
+  let workspaceId = resource.data.workspaceId;
+  let workspace = get(/databases/$(database)/documents/workspaces/$(workspaceId));
+  allow read: if isAuthenticated() && isMember(workspace);
+  allow create: if isAuthenticated() && isTeamMemberOrFounder(get(/databases/$(database)/documents/workspaces/$(resource.data.workspaceId)));
+  allow update, delete: if isAuthenticated() && isTeamMemberOrFounder(workspace);
+}
+
+match /ledger/{ledgerId} {
+  let workspaceId = resource.data.workspaceId;
+  let workspace = get(/databases/$(database)/documents/workspaces/$(workspaceId));
+  allow read: if isAuthenticated() && isMember(workspace);
+  allow create: if isAuthenticated() && isTeamMemberOrFounder(get(/databases/$(database)/documents/workspaces/$(resource.data.workspaceId)));
+  allow update, delete: if false;
+}
+
+match /userProfiles/{userId} {
+  allow read, write: if isAuthenticated() && request.auth.uid == userId;
+}

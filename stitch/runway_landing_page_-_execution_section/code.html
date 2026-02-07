@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Runway - Execution Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Manrope', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-[#111418] dark:text-white antialiased transition-colors duration-300">
+<!-- Main Navigation -->
+<header class="sticky top-0 z-50 w-full border-b border-solid border-[#f0f2f4] dark:border-white/10 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md px-6 md:px-10 py-3">
+<div class="max-w-7xl mx-auto flex items-center justify-between">
+<div class="flex items-center gap-2 text-primary">
+<div class="size-6">
+<svg fill="currentColor" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path clip-rule="evenodd" d="M24 4H42V17.3333V30.6667H24V44H6V30.6667V17.3333H24V4Z" fill-rule="evenodd"></path>
+</svg>
+</div>
+<h2 class="text-[#111418] dark:text-white text-xl font-extrabold leading-tight tracking-tight">Runway</h2>
+</div>
+<nav class="hidden md:flex flex-1 justify-center gap-8">
+<a class="text-[#111418] dark:text-gray-300 text-sm font-semibold hover:text-primary transition-colors" href="#">Product</a>
+<a class="text-[#111418] dark:text-gray-300 text-sm font-semibold hover:text-primary transition-colors" href="#">Features</a>
+<a class="text-[#111418] dark:text-gray-300 text-sm font-semibold hover:text-primary transition-colors" href="#">Solutions</a>
+<a class="text-[#111418] dark:text-gray-300 text-sm font-semibold hover:text-primary transition-colors" href="#">Pricing</a>
+</nav>
+<div class="flex gap-3">
+<button class="hidden sm:flex min-w-[84px] cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold transition-all hover:bg-primary/90">
+                    Try Runway free
+                </button>
+<button class="flex min-w-[84px] cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-[#f0f2f4] dark:bg-white/10 text-[#111418] dark:text-white text-sm font-bold transition-all hover:bg-gray-200 dark:hover:bg-white/20">
+                    Login
+                </button>
+</div>
+</div>
+</header>
+<!-- Execution Management Section -->
+<main class="max-w-7xl mx-auto px-6 md:px-10 py-16 md:py-24">
+<div class="grid lg:grid-cols-2 gap-16 items-center">
+<!-- Left Side: Dashboard Preview -->
+<div class="relative group">
+<!-- Background Decorative Shape -->
+<div class="absolute -inset-4 bg-primary/5 dark:bg-primary/10 rounded-3xl -z-10 transition-transform group-hover:scale-[1.02]"></div>
+<div class="bg-white dark:bg-[#1a2530] border border-gray-100 dark:border-white/5 rounded-2xl shadow-2xl overflow-hidden">
+<!-- Dashboard Header -->
+<div class="px-6 py-4 border-b border-gray-100 dark:border-white/5 flex items-center justify-between">
+<h3 class="font-bold text-lg">Projects</h3>
+<div class="flex gap-2">
+<span class="size-3 rounded-full bg-red-400"></span>
+<span class="size-3 rounded-full bg-yellow-400"></span>
+<span class="size-3 rounded-full bg-green-400"></span>
+</div>
+</div>
+<!-- Dashboard Tabs -->
+<div class="px-6 border-b border-gray-100 dark:border-white/5 bg-gray-50/50 dark:bg-white/5">
+<div class="flex gap-6">
+<a class="border-b-2 border-primary text-primary py-4 text-sm font-bold" href="#">Ongoing</a>
+<a class="border-b-2 border-transparent text-gray-500 dark:text-gray-400 py-4 text-sm font-bold hover:text-gray-700 dark:hover:text-gray-200" href="#">In Review</a>
+<a class="border-b-2 border-transparent text-gray-500 dark:text-gray-400 py-4 text-sm font-bold hover:text-gray-700 dark:hover:text-gray-200" href="#">Completed</a>
+</div>
+</div>
+<!-- Dashboard Tasks -->
+<div class="p-6 space-y-4">
+<!-- Task Item 1 -->
+<div class="flex items-center justify-between p-4 rounded-xl border border-gray-100 dark:border-white/5 bg-white dark:bg-background-dark hover:border-primary/30 transition-colors shadow-sm">
+<div class="flex items-center gap-4">
+<div class="size-12 rounded-full bg-cover bg-center ring-2 ring-primary/10" data-alt="Marketing team collaboration avatar" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDwp-7ecyoL7qNSpWyHFQaEDTC-dy37lTTYHnKPIzv1QefAgYc1rmqQQ2sxM7a6u7ku_2ylK2sWF5o6Ztm_QQoq5Fl3qV0V89hAe0CyGmU_P7w2FNUvjsx7U0xDlL7cTOmd5YibE3qCaA6UcgI7Nd25m1TCKWBWthKvl0gz9ilaNpTs23ncDde8HQiO7T0agvcze4-Sl4dL5RRQTQQ45W8An8NzysIdkuCLPjacGINeEYUrviPPT7xGoREQ2rnB7cACy4D48sGuqmvZ");'></div>
+<div>
+<p class="font-bold text-[#111418] dark:text-white">Asana website audit</p>
+<p class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-semibold">Marketing Team</p>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<span class="hidden sm:inline-flex px-3 py-1 rounded-full bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 text-xs font-bold">High Priority</span>
+<div class="size-6 rounded-full bg-green-500 flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-[16px]">check</span>
+</div>
+</div>
+</div>
+<!-- Task Item 2 -->
+<div class="flex items-center justify-between p-4 rounded-xl border border-gray-100 dark:border-white/5 bg-white dark:bg-background-dark hover:border-primary/30 transition-colors shadow-sm">
+<div class="flex items-center gap-4">
+<div class="size-12 rounded-full bg-cover bg-center ring-2 ring-primary/10" data-alt="Startup strategy workshop icon" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDAp5DUbCLJm-SbrDH0Q62BX-Rgfj8LVST6FvRDh4JpoZd2lrz-fCwH_TyfD-92m1U3l9J0ym1V7lb7G8ytUF9hMd5O0KMF_hSgzvhsJb5AbPG-yudHgQ2TpmgcyT_H2WlDLVVm511-hCZ9TLeHTK4zWt3BW9dcKJoqhqdX1bekzjnJ8BwzKCo1_R-NQvmnDzSi66oUJ88ylBI344weydL4U07FEueFaC7atPseNC40Y2YsVJqPNTruXGvEdeYDAiR3XZx57m6H43xd");'></div>
+<div>
+<p class="font-bold text-[#111418] dark:text-white">Marketing workshop</p>
+<p class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-semibold">Strategy Phase</p>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<span class="hidden sm:inline-flex px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-xs font-bold">Active</span>
+<div class="size-6 rounded-full bg-green-500 flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-[16px]">check</span>
+</div>
+</div>
+</div>
+<!-- Task Item 3 (Small Preview) -->
+<div class="flex items-center justify-between p-4 rounded-xl border border-gray-100 dark:border-white/5 bg-white dark:bg-background-dark opacity-50 grayscale hover:grayscale-0 transition-all">
+<div class="flex items-center gap-4">
+<div class="size-12 rounded-full bg-primary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">analytics</span>
+</div>
+<div>
+<p class="font-bold">Q4 Growth Analysis</p>
+<p class="text-xs text-gray-500 dark:text-gray-400">Data Science</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Floating Blockchain Node Decor -->
+<div class="absolute -bottom-6 -right-6 hidden xl:block p-4 bg-white dark:bg-[#1a2530] border border-gray-100 dark:border-white/5 rounded-xl shadow-xl">
+<div class="flex items-center gap-3">
+<div class="size-8 rounded-lg bg-primary/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-xl">account_tree</span>
+</div>
+<div>
+<p class="text-[10px] font-bold text-gray-400 uppercase">On-Chain Ledger</p>
+<p class="text-xs font-bold">Execution Verified</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Side: Content -->
+<div class="flex flex-col gap-8">
+<div class="space-y-4">
+<p class="text-primary font-extrabold text-sm tracking-[0.2em] uppercase">Execution Management</p>
+<h1 class="text-[#111418] dark:text-white text-4xl md:text-5xl lg:text-6xl font-extrabold leading-[1.1] tracking-tight">
+                        Plan, track and move your startup forward
+                    </h1>
+<p class="text-lg text-[#617589] dark:text-gray-400 leading-relaxed max-w-[540px]">
+                        Stay organized and move faster with structured workspaces designed for high-growth startups. Manage your entire execution pipeline with AI-powered insights and verifiable blockchain milestones.
+                    </p>
+</div>
+<div class="flex flex-col gap-10">
+<div>
+<button class="flex min-w-[200px] cursor-pointer items-center justify-center rounded-lg h-14 px-8 bg-[#111418] dark:bg-white text-white dark:text-[#111418] text-lg font-bold transition-all hover:scale-[1.02] hover:shadow-lg active:scale-95">
+                            Try Runway free
+                        </button>
+</div>
+<!-- Feature Grid -->
+<div class="grid grid-cols-2 gap-4">
+<div class="flex items-center gap-3 p-3 rounded-lg border border-gray-100 dark:border-white/5 bg-white/50 dark:bg-white/5 hover:bg-white dark:hover:bg-white/10 transition-colors">
+<div class="size-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">checklist</span>
+</div>
+<span class="font-bold text-sm">Tasks</span>
+</div>
+<div class="flex items-center gap-3 p-3 rounded-lg border border-gray-100 dark:border-white/5 bg-white/50 dark:bg-white/5 hover:bg-white dark:hover:bg-white/10 transition-colors">
+<div class="size-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">update</span>
+</div>
+<span class="font-bold text-sm">Weekly Tracking</span>
+</div>
+<div class="flex items-center gap-3 p-3 rounded-lg border border-gray-100 dark:border-white/5 bg-white/50 dark:bg-white/5 hover:bg-white dark:hover:bg-white/10 transition-colors">
+<div class="size-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">reviews</span>
+</div>
+<span class="font-bold text-sm">Validation feedback</span>
+</div>
+<div class="flex items-center gap-3 p-3 rounded-lg border border-gray-100 dark:border-white/5 bg-white/50 dark:bg-white/5 hover:bg-white dark:hover:bg-white/10 transition-colors">
+<div class="size-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">insights</span>
+</div>
+<span class="font-bold text-sm">Progress Analytics</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer Simple -->
+<footer class="border-t border-gray-100 dark:border-white/5 py-10">
+<div class="max-w-7xl mx-auto px-10 flex flex-col md:flex-row items-center justify-between gap-6">
+<div class="flex items-center gap-2 opacity-50 grayscale hover:grayscale-0 transition-all cursor-pointer">
+<div class="size-5 bg-primary rounded-sm"></div>
+<span class="font-bold text-sm tracking-tight">RUNWAY OS</span>
+</div>
+<p class="text-sm text-gray-500 dark:text-gray-400">© 2024 Runway Platforms Inc. All rights reserved.</p>
+<div class="flex gap-6">
+<a class="text-sm text-gray-500 hover:text-primary transition-colors" href="#">Twitter</a>
+<a class="text-sm text-gray-500 hover:text-primary transition-colors" href="#">LinkedIn</a>
+<a class="text-sm text-gray-500 hover:text-primary transition-colors" href="#">Github</a>
+</div>
+</div>
+</footer>
+</body></html>
