@@ -82,16 +82,37 @@ export interface Sprint {
 
 export type ValidationType = "interview" | "survey" | "experiment";
 
+/** Source of respondent for external validation link (public form). */
+export type ValidationSourceType =
+  | "customer"
+  | "potential_customer"
+  | "investor"
+  | "team_member"
+  | "other";
+
 export interface ValidationEntry {
   id: string;
   workspaceId: string;
-  sprintId: string;
+  /** Optional for external_link entries (no active sprint when submitted). */
+  sprintId: string | null;
   milestoneId: string;
   type: ValidationType;
   summary: string;
   qualitativeNotes: string;
-  createdBy: string;
+  /** Optional for external_link entries (anonymous respondent). */
+  createdBy: string | null;
   createdAt: number;
+  /**
+   * "external_link" = submitted via public validation link; immutable.
+   * Omitted or "internal" = logged inside Runway by team.
+   */
+  origin?: "internal" | "external_link";
+  /** Set only when origin === "external_link". */
+  sourceType?: ValidationSourceType | null;
+  /** Set only when origin === "external_link"; main feedback text. */
+  feedbackText?: string | null;
+  /** 1–5 when origin === "external_link" and respondent provided it. */
+  confidenceScore?: number | null;
 }
 
 /** Ledger entry for Execution & Validation Ledger (blockchain mock) */

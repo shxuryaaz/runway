@@ -17,7 +17,7 @@ export interface ExecutionInsight {
 
 export interface ValidationInsight {
   id: string;
-  type: "weak_signal" | "missing_validation" | "trend";
+  type: "weak_signal" | "missing_validation" | "trend" | "no_external_feedback" | "low_external_confidence";
   title: string;
   description: string;
   milestoneId?: string;
@@ -93,31 +93,59 @@ export function getExecutionInsights(
   return insights;
 }
 
-/** Highlight weak or missing validation. */
+/** Highlight weak or missing validation. Rule-based only; no AI analysis. */
 export function getValidationInsights(
   milestones: Milestone[],
   validations: ValidationEntry[],
-  sprints: Sprint[]
+  _sprints: Sprint[]
 ): ValidationInsight[] {
   const insights: ValidationInsight[] = [];
   const activeMilestones = milestones.filter((m) => m.status === "active" || m.status === "completed");
 
   for (const m of activeMilestones) {
-    const count = validations.filter((v) => v.milestoneId === m.id).length;
-    if (count === 0) {
+    const forMilestone = validations.filter((v) => v.milestoneId === m.id);
+    const external = forMilestone.filter((v) => v.origin === "external_link");
+    const internal = forMilestone.filter((v) => v.origin !== "external_link");
+
+    if (forMilestone.length === 0) {
       insights.push({
         id: `missing-${m.id}`,
         type: "missing_validation",
         title: "No validation recorded",
-        description: `"${m.title}" has no customer interviews, surveys, or experiments logged. Add validation to de-risk the roadmap.`,
+        description: `"${m.title}" has no feedback logged. Add validation or share the validation link to collect external evidence.`,
         milestoneId: m.id,
       });
-    } else if (count === 1) {
+    } else if (external.length === 0) {
+      insights.push({
+        id: `no-external-${m.id}`,
+        type: "no_external_feedback",
+        title: "Validation risk: No external feedback collected yet",
+        description: `"${m.title}" has only internal notes. Share the validation link to collect external feedback and strengthen evidence.`,
+        milestoneId: m.id,
+      });
+    } else {
+      const withScore = external.filter((v) => v.confidenceScore != null);
+      const avgConfidence =
+        withScore.length > 0
+          ? withScore.reduce((a, v) => a + (v.confidenceScore ?? 0), 0) / withScore.length
+          : null;
+      if (avgConfidence !== null && avgConfidence < 3) {
+        insights.push({
+          id: `low-confidence-${m.id}`,
+          type: "low_external_confidence",
+          title: "Weak validation signal: External confidence is low",
+          description: `"${m.title}" has external feedback but average confidence is ${avgConfidence.toFixed(1)}/5. Consider iterating or gathering more evidence.`,
+          milestoneId: m.id,
+        });
+      }
+    }
+
+    if (forMilestone.length === 1 && insights.filter((i) => i.milestoneId === m.id).length === 0) {
       insights.push({
         id: `weak-${m.id}`,
         type: "weak_signal",
         title: "Single validation source",
-        description: `"${m.title}" has only one validation entry. Multiple sources (e.g. interviews + survey) strengthen signal.`,
+        description: `"${m.title}" has only one validation entry. Multiple sources strengthen signal.`,
         milestoneId: m.id,
       });
     }

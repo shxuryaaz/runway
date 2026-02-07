@@ -4,7 +4,7 @@ Unified operational workspace for early-stage startup founders. Built for IIT Ja
 
 - **Execution tracking** — Startup workspaces, milestones, tasks, weekly sprints
 - **Roles** — Founder (full), Team member (limited write), Investor (read-only)
-- **Validation** — Validation data can be used in insights and investor view
+- **Validation** — Internal notes and external feedback via shareable validation links (no login for respondents); evidence tied to milestones
 - **Analytics** — Tasks completed over time, sprint reliability, validation activity
 - **AI layer** — Rule-based execution and validation insights; investor summary generator
 - **Trust** — Security and transparency for execution data
@@ -39,6 +39,8 @@ Unified operational workspace for early-stage startup founders. Built for IIT Ja
    NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=...
    NEXT_PUBLIC_FIREBASE_APP_ID=...
    ```
+
+   For **public validation links** (shareable feedback form per milestone), set **`FIREBASE_SERVICE_ACCOUNT_KEY`** in `.env` to your Firebase service account JSON (Project settings → Service accounts → Generate new key). Paste the whole JSON on **one line** and wrap in single quotes so quotes inside don’t break parsing, e.g. `FIREBASE_SERVICE_ACCOUNT_KEY='{"type":"service_account","project_id":"your-project",...}'`. Alternatively use `FIREBASE_SERVICE_ACCOUNT_PATH=firebase-service-account.json` and save the JSON in that file (gitignored). Never commit the key.
 
 3. **Firestore rules**
 

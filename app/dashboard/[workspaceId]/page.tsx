@@ -45,6 +45,7 @@ export default function WorkspaceOverviewPage() {
   const [showAddMilestoneForm, setShowAddMilestoneForm] = useState(false);
   const [showAddTaskForm, setShowAddTaskForm] = useState(false);
   const [expandedMilestoneIds, setExpandedMilestoneIds] = useState<Set<string>>(new Set());
+  const [validationLinkCopiedId, setValidationLinkCopiedId] = useState<string | null>(null);
 
   const handleMilestoneStatusChange = async (milestoneId: string, status: MilestoneStatus) => {
     if (!canWrite) return;
@@ -177,6 +178,8 @@ export default function WorkspaceOverviewPage() {
   const hasChartData = chartData.some((p) => p > 0);
 
   const completedMilestonesCount = milestones.filter((m) => m.status === "completed").length;
+  const externalValidations = validations.filter((v) => v.origin === "external_link");
+  const internalValidations = validations.filter((v) => v.origin !== "external_link");
 
   function getSprintProgress(sprint: Sprint) {
     const start = new Date(sprint.weekStartDate).getTime();
@@ -202,6 +205,14 @@ export default function WorkspaceOverviewPage() {
     const list = tasks.filter((t) => t.milestoneId === milestoneId);
     const done = list.filter((t) => t.status === "done").length;
     return { list, done, total: list.length };
+  }
+
+  function copyValidationLink(milestoneId: string) {
+    const url = `${typeof window !== "undefined" ? window.location.origin : ""}/validate/${workspaceId}/${milestoneId}`;
+    void navigator.clipboard.writeText(url).then(() => {
+      setValidationLinkCopiedId(milestoneId);
+      setTimeout(() => setValidationLinkCopiedId(null), 2000);
+    });
   }
 
   return (
@@ -264,15 +275,23 @@ export default function WorkspaceOverviewPage() {
           <p className="text-3xl font-extrabold text-[#111418] dark:text-white mt-3">{completionPct}%</p>
           <p className="text-xs text-[#5f6368] dark:text-gray-400 mt-0.5">task completion in this workspace</p>
         </div>
-        <div className="bg-white dark:bg-[#1a2530] rounded-2xl border border-[#e8eaed] dark:border-white/5 p-5 shadow-sm hover:shadow-md transition-shadow">
+        <div className="bg-white dark:bg-[#1a2530] rounded-2xl border border-[#e8eaed] dark:border-white/5 p-5 shadow-sm hover:shadow-md transition-shadow" title={externalValidations.length > 0 ? `${externalValidations.length} responses collected via public validation link` : undefined}>
           <div className="flex items-start justify-between">
             <div className="p-2 rounded-xl bg-primary/10">
               <span className="material-symbols-outlined text-primary text-[24px]">reviews</span>
             </div>
-            <p className="text-xs font-medium text-[#5f6368] dark:text-gray-400">Validation entries</p>
+            <p className="text-xs font-medium text-[#5f6368] dark:text-gray-400">Validation coverage</p>
           </div>
-          <p className="text-3xl font-extrabold text-[#111418] dark:text-white mt-3">{validations.length}</p>
-          <p className="text-xs text-[#5f6368] dark:text-gray-400 mt-0.5">logged</p>
+          <p className="text-3xl font-extrabold text-[#111418] dark:text-white mt-3">
+            {externalValidations.length > 0 ? `External (${externalValidations.length})` : validations.length}
+          </p>
+          <p className="text-xs text-[#5f6368] dark:text-gray-400 mt-0.5">
+            {validations.length === 0
+              ? "No feedback yet"
+              : externalValidations.length > 0
+              ? `${internalValidations.length} internal · ${externalValidations.length} via link`
+              : "internal only"}
+          </p>
         </div>
       </div>
 
@@ -539,7 +558,7 @@ export default function WorkspaceOverviewPage() {
                     )}
                   </button>
                   {isExpanded && (
-                    <div className="border-t border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/50 px-3 py-3 pl-11">
+                    <div className="border-t border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/50 px-3 py-3 pl-11 space-y-3">
                       {milestoneTasks.length === 0 ? (
                         <p className="text-sm text-gray-500">No tasks in this milestone. Add one via Quick actions.</p>
                       ) : (
@@ -559,6 +578,21 @@ export default function WorkspaceOverviewPage() {
                           ))}
                         </ul>
                       )}
+                      {canWrite && (
+                        <div className="pt-2 border-t border-gray-200 dark:border-gray-700">
+                          <button
+                            type="button"
+                            onClick={(e) => { e.stopPropagation(); copyValidationLink(m.id); }}
+                            className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"
+                          >
+                            <span className="material-symbols-outlined text-lg">link</span>
+                            {validationLinkCopiedId === m.id ? "Link copied" : "Share validation link"}
+                          </button>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                            Collect external feedback for this milestone. No login required for respondents.
+                          </p>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
@@ -567,6 +601,60 @@ export default function WorkspaceOverviewPage() {
           )}
         </div>
       </div>
+
+      {/* Validation: external feedback vs internal notes */}
+      {(externalValidations.length > 0 || internalValidations.length > 0) && (
+        <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-6">
+          <h2 className="text-lg font-bold text-[#111418] dark:text-white mb-4">Validation</h2>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+            External feedback from the validation link; internal notes from the team.
+          </p>
+
+          {externalValidations.length > 0 && (
+            <div className="mb-6">
+              <h3 className="text-sm font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-3">External feedback</h3>
+              <ul className="space-y-3">
+                {externalValidations.map((v) => (
+                  <li key={v.id} className="p-3 rounded-xl border border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/50">
+                    <div className="flex flex-wrap items-center gap-2 text-xs text-gray-500 dark:text-gray-400 mb-1">
+                      {v.sourceType && (
+                        <span className="font-medium capitalize">{v.sourceType.replace("_", " ")}</span>
+                      )}
+                      {v.confidenceScore != null && (
+                        <span>Confidence: {v.confidenceScore}/5</span>
+                      )}
+                      <span>{new Date(v.createdAt).toLocaleString()}</span>
+                    </div>
+                    <p className="text-sm text-[#111418] dark:text-white whitespace-pre-wrap">
+                      {v.feedbackText ?? v.summary}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {internalValidations.length > 0 && (
+            <div>
+              <h3 className="text-sm font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-3">Internal notes</h3>
+              <ul className="space-y-3">
+                {internalValidations.map((v) => (
+                  <li key={v.id} className="p-3 rounded-xl border border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/50">
+                    <div className="flex flex-wrap items-center gap-2 text-xs text-gray-500 dark:text-gray-400 mb-1">
+                      <span className="font-medium capitalize">{v.type}</span>
+                      <span>{new Date(v.createdAt).toLocaleString()}</span>
+                    </div>
+                    <p className="text-sm text-[#111418] dark:text-white">{v.summary}</p>
+                    {v.qualitativeNotes && (
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{v.qualitativeNotes}</p>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Hint when milestones exist but no tasks yet */}
       {taskStats.total === 0 && milestones.length > 0 && canWrite && (

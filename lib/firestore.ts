@@ -397,13 +397,17 @@ export async function getValidationsForWorkspace(
     return {
       id: s.id,
       workspaceId: d.workspaceId,
-      sprintId: d.sprintId,
+      sprintId: d.sprintId ?? null,
       milestoneId: d.milestoneId,
       type: d.type,
-      summary: d.summary,
-      qualitativeNotes: d.qualitativeNotes,
-      createdBy: d.createdBy,
+      summary: d.summary ?? "",
+      qualitativeNotes: d.qualitativeNotes ?? "",
+      createdBy: d.createdBy ?? null,
       createdAt: toMillis(d.createdAt),
+      origin: d.origin ?? "internal",
+      sourceType: d.sourceType ?? null,
+      feedbackText: d.feedbackText ?? null,
+      confidenceScore: d.confidenceScore ?? null,
     };
   });
   entries.sort((a, b) => b.createdAt - a.createdAt);
