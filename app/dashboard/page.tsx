@@ -2,19 +2,23 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { getWorkspacesForUser } from "@/lib/firestore";
+import { seedDummyWorkspace } from "@/lib/seed-dummy";
 import type { StartupWorkspace } from "@/lib/types";
 import { RunwayLogo } from "@/components/RunwayLogo";
 import { isFirebaseConfigured } from "@/lib/firebase";
 
 export default function DashboardWorkspacesPage() {
   const { user } = useAuth();
+  const router = useRouter();
   const [workspaces, setWorkspaces] = useState<StartupWorkspace[]>([]);
   const [loading, setLoading] = useState(true);
   const [createName, setCreateName] = useState("");
   const [createStage, setCreateStage] = useState<StartupWorkspace["stage"]>("MVP");
   const [creating, setCreating] = useState(false);
+  const [seeding, setSeeding] = useState(false);
   const configured = isFirebaseConfigured();
 
   useEffect(() => {
@@ -66,6 +70,26 @@ export default function DashboardWorkspacesPage() {
     }
   };
 
+  const handleLoadDemoData = async () => {
+    if (!user || !configured) return;
+    setSeeding(true);
+    try {
+      const workspaceId = await seedDummyWorkspace({
+        userId: user.uid,
+        userEmail: user.email ?? "",
+        displayName: user.displayName ?? undefined,
+      });
+      const list = await getWorkspacesForUser(user.uid);
+      setWorkspaces(list);
+      router.push(`/dashboard/${workspaceId}`);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to load demo data. Check the console.");
+    } finally {
+      setSeeding(false);
+    }
+  };
+
   if (!configured) {
     return (
       <div className="py-12 text-center">
@@ -78,9 +102,19 @@ export default function DashboardWorkspacesPage() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-2xl font-bold text-[#111418] dark:text-white">Welcome back, Founder</h1>
-        <p className="text-[#5f6368] dark:text-gray-400 text-sm mt-0.5">Your workspaces</p>
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-[#111418] dark:text-white">Welcome back, Founder</h1>
+          <p className="text-[#5f6368] dark:text-gray-400 text-sm mt-0.5">Your workspaces</p>
+        </div>
+        <button
+          type="button"
+          onClick={handleLoadDemoData}
+          disabled={seeding}
+          className="rounded-lg h-10 px-4 border border-primary text-primary dark:border-primary dark:text-primary bg-transparent text-sm font-bold hover:bg-primary/10 disabled:opacity-50"
+        >
+          {seeding ? "Loading…" : "Load demo data"}
+        </button>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">

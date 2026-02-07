@@ -213,32 +213,10 @@ export default function WorkspaceOverviewPage() {
 
   return (
     <div className="space-y-8">
-      {/* Top header bar - Dreelio style */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-[#111418] dark:text-white">Welcome back, Founder</h1>
-          <p className="text-[#5f6368] dark:text-gray-400 text-sm mt-0.5">Your startup workspace</p>
-        </div>
-        <div className="flex items-center gap-2 flex-wrap">
-          <div className="flex-1 min-w-[200px] max-w-md rounded-xl border border-[#dadce0] dark:border-white/10 bg-white dark:bg-[#1a2530] px-4 py-2.5 flex items-center gap-2 text-[#5f6368] dark:text-gray-400 text-sm">
-            <span className="material-symbols-outlined text-[20px]">search</span>
-            <span>Search</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <button type="button" className="p-2 rounded-lg hover:bg-white dark:hover:bg-white/10 text-[#5f6368] dark:text-gray-400" title="Insights">
-              <span className="material-symbols-outlined text-[22px]">insights</span>
-            </button>
-            <Link href={`/dashboard/${workspaceId}/analytics`} className="p-2 rounded-lg hover:bg-white dark:hover:bg-white/10 text-[#5f6368] dark:text-gray-400" title="Analytics">
-              <span className="material-symbols-outlined text-[22px]">analytics</span>
-            </Link>
-            <Link href={`/dashboard/${workspaceId}/ledger`} className="p-2 rounded-lg hover:bg-white dark:hover:bg-white/10 text-[#5f6368] dark:text-gray-400" title="Ledger">
-              <span className="material-symbols-outlined text-[22px]">account_tree</span>
-            </Link>
-          </div>
-          <div className="size-10 rounded-full bg-[#e8eaed] dark:bg-white/20 flex items-center justify-center overflow-hidden">
-            <span className="material-symbols-outlined text-[24px] text-[#5f6368] dark:text-gray-400">person</span>
-          </div>
-        </div>
+      {/* Top header bar */}
+      <div>
+        <h1 className="text-2xl font-bold text-[#111418] dark:text-white">Welcome back, Founder</h1>
+        <p className="text-[#5f6368] dark:text-gray-400 text-sm mt-0.5">Your startup workspace</p>
       </div>
 
       {/* Four metric cards - reference style with icons */}
