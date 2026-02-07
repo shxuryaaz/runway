@@ -211,31 +211,31 @@ export default function LandingPage() {
         </div>
         </div>
 
-        {/* Social proof (Stitch hero footer row) */}
+        {/* Integrations */}
         <section className="max-w-[1200px] mx-auto px-6 py-20">
-          <h4 className="text-center text-xs font-bold uppercase tracking-[0.2em] text-gray-400 mb-12">
-            Built for early teams
+          <h4 className="text-center text-xs font-bold uppercase tracking-[0.2em] text-[#5f6368] dark:text-gray-400 mb-12">
+            Use your favourite integrations
           </h4>
-          <div className="flex flex-wrap justify-center items-center gap-12 lg:gap-20 opacity-40 grayscale contrast-125">
-            <div className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-3xl">payments</span>
-              <span className="text-xl font-bold tracking-tighter">Stripe</span>
+          <div className="flex flex-wrap justify-center items-center gap-10 lg:gap-16">
+            <div className="flex items-center gap-2 text-[#111418] dark:text-white">
+              <span className="material-symbols-outlined text-2xl text-primary">hub</span>
+              <span className="text-lg font-semibold tracking-tight">Slack</span>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-3xl">movie</span>
-              <span className="text-xl font-bold tracking-tighter">Netflix</span>
+            <div className="flex items-center gap-2 text-[#111418] dark:text-white">
+              <span className="material-symbols-outlined text-2xl text-primary">task_alt</span>
+              <span className="text-lg font-semibold tracking-tight">Jira</span>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-3xl">language</span>
-              <span className="text-xl font-bold tracking-tighter">Google</span>
+            <div className="flex items-center gap-2 text-[#111418] dark:text-white">
+              <span className="material-symbols-outlined text-2xl text-primary">videocam</span>
+              <span className="text-lg font-semibold tracking-tight">Loom</span>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-3xl">token</span>
-              <span className="text-xl font-bold tracking-tighter">Coinbase</span>
+            <div className="flex items-center gap-2 text-[#111418] dark:text-white">
+              <span className="material-symbols-outlined text-2xl text-primary">code</span>
+              <span className="text-lg font-semibold tracking-tight">GitHub</span>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-3xl">category</span>
-              <span className="text-xl font-bold tracking-tighter">Airbnb</span>
+            <div className="flex items-center gap-2 text-[#111418] dark:text-white">
+              <span className="material-symbols-outlined text-2xl text-primary">description</span>
+              <span className="text-lg font-semibold tracking-tight">Notion</span>
             </div>
           </div>
         </section>
@@ -374,7 +374,7 @@ export default function LandingPage() {
       </section>
 
       {/* ========== 3. FEATURES GRID (Stitch: features_grid) ========== */}
-      <section id="features" className="flex-1 grid-bg">
+      <section id="features" className="flex-1 bg-[#f8fafb] dark:bg-[#0f1419]">
         <div className="max-w-[1200px] mx-auto px-6 py-16 md:py-24">
           <div className="text-center mb-16">
             <span className="text-primary font-bold text-sm tracking-[0.2em] uppercase mb-4 block">Capabilities</span>
@@ -382,7 +382,7 @@ export default function LandingPage() {
               Built for early stage founders
             </h2>
             <p className="mt-4 text-[#617589] dark:text-slate-400 text-lg max-w-2xl mx-auto">
-              The execution layer for your startup. From seed to scale, manage every milestone with AI-enhanced precision and blockchain-grade security.
+              The execution layer for your startup. From seed to scale, manage every milestone with a clear audit trail and structured tracking.
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6">
@@ -604,130 +604,45 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ========== 5. AI LAYER (Stitch: ai_layer) ========== */}
-      <section id="ai" className="bg-background-light dark:bg-background-dark border-t border-gray-200/50 dark:border-gray-800">
-        <section className="relative overflow-hidden py-16 lg:py-24">
-          <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent" />
-          <div className="mx-auto max-w-4xl px-6 text-center">
-            <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 mb-8">
-              <span className="material-symbols-outlined text-[16px] text-primary">auto_awesome</span>
-              <span className="text-xs font-bold uppercase tracking-widest text-primary">The Intelligence Layer</span>
-            </div>
-            <h2 className="text-4xl font-extrabold tracking-tight text-[#111418] dark:text-white sm:text-6xl mb-6 leading-[1.1]">
-              AI-Powered Intelligence
+      {/* ========== 5. Insights / Smart summaries ========== */}
+      <section id="ai" className="bg-[#f8fafb] dark:bg-[#0f1419] border-t border-gray-200/50 dark:border-gray-800">
+        <div className="mx-auto max-w-6xl px-6 py-20 lg:py-28">
+          <div className="mb-16">
+            <h2 className="text-3xl font-bold tracking-tight text-[#111418] dark:text-white sm:text-4xl max-w-2xl">
+              See what’s stuck. Summarize feedback. Update investors.
             </h2>
-            <p className="mx-auto max-w-2xl text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
-              The execution and management platform for high-growth startups. Leverage our AI layer to navigate complexity and ship faster.
+            <p className="mt-4 text-base text-[#5f6368] dark:text-gray-400 max-w-xl">
+              Runway turns your sprint and validation data into clear signals—no buzzwords, no dashboards you’ll never open.
             </p>
           </div>
-        </section>
-        <div className="mx-auto max-w-7xl px-6 pb-24">
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-            <div className="group relative flex flex-col rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-[#16202c] p-8 shadow-sm transition-all hover:border-primary/50 hover:shadow-xl dark:hover:border-primary/50">
-              <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 text-primary transition-transform group-hover:scale-110">
-                <span className="material-symbols-outlined text-[32px]">insights</span>
-              </div>
-              <h3 className="mb-3 text-xl font-bold text-[#111418] dark:text-white">AI-assisted execution insights</h3>
-              <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-                Identify stalled milestones, repeated blockers, and execution risks based on task and sprint data. Our models predict delays before they happen.
+          <div className="grid grid-cols-1 gap-8 sm:grid-cols-3">
+            <div className="rounded-2xl border border-[#e8eaed] dark:border-white/10 bg-white dark:bg-[#161d26] p-6 sm:p-7">
+              <span className="inline-block text-2xl font-bold tabular-nums text-primary/80">01</span>
+              <h3 className="mt-4 text-lg font-semibold text-[#111418] dark:text-white">Execution health</h3>
+              <p className="mt-2 text-sm text-[#5f6368] dark:text-gray-400 leading-relaxed">
+                Spot stalled milestones and repeated blockers from your task and sprint history. Get a straight read on where things actually stand.
               </p>
-              <div className="mt-8 flex items-center gap-2 text-sm font-bold text-primary opacity-0 group-hover:opacity-100 transition-opacity">
-                Learn more <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
-              </div>
             </div>
-            <div className="group relative flex flex-col rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-[#16202c] p-8 shadow-sm transition-all hover:border-primary/50 hover:shadow-xl dark:hover:border-primary/50">
-              <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 text-primary transition-transform group-hover:scale-110">
-                <span className="material-symbols-outlined text-[32px]">biotech</span>
-              </div>
-              <h3 className="mb-3 text-xl font-bold text-[#111418] dark:text-white">Validation signal analysis</h3>
-              <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-                Summarize feedback trends and highlight weak assumptions from qualitative inputs. Turn raw customer interviews into actionable roadmap items.
+            <div className="rounded-2xl border border-[#e8eaed] dark:border-white/10 bg-white dark:bg-[#161d26] p-6 sm:p-7">
+              <span className="inline-block text-2xl font-bold tabular-nums text-primary/80">02</span>
+              <h3 className="mt-4 text-lg font-semibold text-[#111418] dark:text-white">Feedback, distilled</h3>
+              <p className="mt-2 text-sm text-[#5f6368] dark:text-gray-400 leading-relaxed">
+                Interviews and validation notes summarized into trends and weak assumptions. Turn raw input into concrete next steps.
               </p>
-              <div className="mt-8 flex items-center gap-2 text-sm font-bold text-primary opacity-0 group-hover:opacity-100 transition-opacity">
-                See how it works <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
-              </div>
             </div>
-            <div className="group relative flex flex-col rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-[#16202c] p-8 shadow-sm transition-all hover:border-primary/50 hover:shadow-xl dark:hover:border-primary/50">
-              <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 text-primary transition-transform group-hover:scale-110">
-                <span className="material-symbols-outlined text-[32px]">summarize</span>
-              </div>
-              <h3 className="mb-3 text-xl font-bold text-[#111418] dark:text-white">Investor-ready summaries</h3>
-              <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-                Auto-generate a structured snapshot covering problem, execution progress, validation, and roadmap. Keep your stakeholders informed with zero effort.
+            <div className="rounded-2xl border border-[#e8eaed] dark:border-white/10 bg-white dark:bg-[#161d26] p-6 sm:p-7">
+              <span className="inline-block text-2xl font-bold tabular-nums text-primary/80">03</span>
+              <h3 className="mt-4 text-lg font-semibold text-[#111418] dark:text-white">Stakeholder one-pagers</h3>
+              <p className="mt-2 text-sm text-[#5f6368] dark:text-gray-400 leading-relaxed">
+                One structured snapshot: problem, progress, validation, roadmap. Share with investors or leadership without rewriting decks.
               </p>
-              <div className="mt-8 flex items-center gap-2 text-sm font-bold text-primary opacity-0 group-hover:opacity-100 transition-opacity">
-                View samples <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
-              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ========== 6. TRUST + FINAL CTA (Stitch: trust_&_final_cta) ========== */}
+      {/* ========== 6. FINAL CTA ========== */}
       <section id="trust" className="bg-background-light dark:bg-background-dark border-t border-[#dbe0e6] dark:border-[#2d3945]">
-        <div className="max-w-[1200px] mx-auto px-4 py-20">
-          <div className="text-center mb-12">
-            <span className="text-primary font-bold text-sm tracking-widest uppercase mb-4 block">Security &amp; Transparency</span>
-            <h2 className="text-4xl md:text-5xl font-extrabold leading-tight tracking-tight text-[#111418] dark:text-white">
-              Security &amp; Transparency
-            </h2>
-          </div>
-          <div className="flex flex-col lg:flex-row items-center gap-10 rounded-xl border border-[#dbe0e6] dark:border-[#2d3945] bg-white dark:bg-[#1a2632] p-8 shadow-xl overflow-hidden">
-            <div className="w-full lg:w-1/2 aspect-square md:aspect-video lg:aspect-square bg-[#f0f4f8] dark:bg-[#0d141b] rounded-lg relative overflow-hidden flex items-center justify-center trust-grid">
-              <div className="z-10 bg-white dark:bg-background-dark p-6 rounded-xl border border-primary/20 shadow-2xl flex flex-col gap-4 max-w-[80%]">
-                <div className="flex items-center gap-3 border-b border-[#f0f2f4] dark:border-[#2d3945] pb-3">
-                  <span className="material-symbols-outlined text-primary">verified_user</span>
-                  <span className="font-mono text-xs font-bold opacity-70">EXECUTION_HASH_V2.0</span>
-                </div>
-                <div className="flex flex-col gap-2">
-                  <div className="h-2 w-full bg-[#f0f2f4] dark:bg-[#2d3945] rounded-full" />
-                  <div className="h-2 w-3/4 bg-[#f0f2f4] dark:bg-[#2d3945] rounded-full" />
-                  <div className="h-2 w-5/6 bg-primary/40 rounded-full" />
-                </div>
-                <div className="text-[10px] font-mono opacity-50 truncate">
-                  0x71C7656EC7ab88b098defB751B7401B5f6d8976F
-                </div>
-              </div>
-            </div>
-            <div className="w-full lg:w-1/2 flex flex-col gap-6">
-              <div className="flex flex-col gap-4">
-                <h3 className="text-2xl font-bold text-[#111418] dark:text-white">Secure Execution History</h3>
-                <p className="text-[#617589] dark:text-gray-400 text-lg leading-relaxed">
-                  Weekly sprint commitments and outcomes are cryptographically hashed and time-stamped, creating a tamper-resistant execution history that provides absolute clarity on company progress.
-                </p>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-1 gap-4 pt-4">
-                <div className="flex items-start gap-4 p-4 rounded-lg bg-background-light dark:bg-[#101922] border border-[#dbe0e6] dark:border-[#2d3945]">
-                  <div className="bg-primary/10 p-2 rounded-lg">
-                    <span className="material-symbols-outlined text-primary">rocket_launch</span>
-                  </div>
-                  <div className="flex flex-col">
-                    <h4 className="font-bold text-sm text-[#111418] dark:text-white">Innovation &amp; scalability</h4>
-                    <p className="text-xs text-[#617589] dark:text-gray-500">Build on a secure foundation</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-4 p-4 rounded-lg bg-background-light dark:bg-[#101922] border border-[#dbe0e6] dark:border-[#2d3945]">
-                  <div className="bg-primary/10 p-2 rounded-lg">
-                    <span className="material-symbols-outlined text-primary">handshake</span>
-                  </div>
-                  <div className="flex flex-col">
-                    <h4 className="font-bold text-sm text-[#111418] dark:text-white">Investor readiness</h4>
-                    <p className="text-xs text-[#617589] dark:text-gray-500">Proof of execution for VCs</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-4 p-4 rounded-lg bg-background-light dark:bg-[#101922] border border-[#dbe0e6] dark:border-[#2d3945]">
-                  <div className="bg-primary/10 p-2 rounded-lg">
-                    <span className="material-symbols-outlined text-primary">security</span>
-                  </div>
-                  <div className="flex flex-col">
-                    <h4 className="font-bold text-sm text-[#111418] dark:text-white">Real-world applicability</h4>
-                    <p className="text-xs text-[#617589] dark:text-gray-500">Practical blockchain integration</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
         <section className="bg-[#111418] dark:bg-black text-white py-24 px-4 overflow-hidden relative">
           <div className="absolute inset-0 opacity-10 pointer-events-none trust-grid" />
           <div className="max-w-[800px] mx-auto text-center relative z-10">
@@ -761,7 +676,7 @@ export default function LandingPage() {
               <h2 className="text-lg font-bold text-[#111418] dark:text-white">Runway</h2>
             </div>
             <p className="text-sm text-[#617589] dark:text-gray-500 leading-relaxed">
-              The ultimate execution engine for modern startups. Powered by AI, secured by Blockchain.
+              The ultimate execution engine for modern startups.
             </p>
           </div>
           <div>
