@@ -57,7 +57,7 @@ export default function UpgradePage() {
               <li>AI-powered insights & suggestions</li>
               <li>Advanced analytics & exports</li>
               <li>Priority support</li>
-              <li>Execution ledger & audit trail</li>
+              <li>Advanced execution tracking</li>
             </ul>
             <button
               type="button"

@@ -13,7 +13,6 @@ import {
   getValidationsForWorkspace,
   createMilestone,
   createTask,
-  createValidationEntry,
   updateMilestone,
 } from "@/lib/firestore";
 import { getExecutionInsights, getValidationInsights } from "@/lib/ai-mock";
@@ -42,13 +41,10 @@ export default function WorkspaceOverviewPage() {
   const [newTaskMilestoneId, setNewTaskMilestoneId] = useState("");
   const [addingMilestone, setAddingMilestone] = useState(false);
   const [addingTask, setAddingTask] = useState(false);
-  const [validationSprintId, setValidationSprintId] = useState("");
-  const [validationMilestoneId, setValidationMilestoneId] = useState("");
-  const [validationType, setValidationType] = useState<ValidationEntry["type"]>("interview");
-  const [validationSummary, setValidationSummary] = useState("");
-  const [validationNotes, setValidationNotes] = useState("");
-  const [addingValidation, setAddingValidation] = useState(false);
   const [updatingMilestoneId, setUpdatingMilestoneId] = useState<string | null>(null);
+  const [showAddMilestoneForm, setShowAddMilestoneForm] = useState(false);
+  const [showAddTaskForm, setShowAddTaskForm] = useState(false);
+  const [expandedMilestoneIds, setExpandedMilestoneIds] = useState<Set<string>>(new Set());
 
   const handleMilestoneStatusChange = async (milestoneId: string, status: MilestoneStatus) => {
     if (!canWrite) return;
@@ -120,6 +116,7 @@ export default function WorkspaceOverviewPage() {
       ]);
       setNewMilestoneTitle("");
       setNewMilestoneDesc("");
+      setShowAddMilestoneForm(false);
     } finally {
       setAddingMilestone(false);
     }
@@ -153,45 +150,9 @@ export default function WorkspaceOverviewPage() {
       ]);
       setNewTaskTitle("");
       setNewTaskMilestoneId("");
+      setShowAddTaskForm(false);
     } finally {
       setAddingTask(false);
-    }
-  };
-
-  const handleAddValidation = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!workspaceId || !validationSprintId || !validationMilestoneId || !validationSummary.trim() || !user || !canWrite) return;
-    setAddingValidation(true);
-    try {
-      const id = await createValidationEntry(
-        workspaceId,
-        validationSprintId,
-        validationMilestoneId,
-        validationType,
-        validationSummary.trim(),
-        validationNotes.trim(),
-        user.uid
-      );
-      setValidations((v) => [
-        {
-          id,
-          workspaceId,
-          sprintId: validationSprintId,
-          milestoneId: validationMilestoneId,
-          type: validationType,
-          summary: validationSummary.trim(),
-          qualitativeNotes: validationNotes.trim(),
-          createdBy: user.uid,
-          createdAt: Date.now(),
-        },
-        ...v,
-      ]);
-      setValidationSprintId("");
-      setValidationMilestoneId("");
-      setValidationSummary("");
-      setValidationNotes("");
-    } finally {
-      setAddingValidation(false);
     }
   };
 
@@ -213,9 +174,38 @@ export default function WorkspaceOverviewPage() {
   const completedSprints = sprints.filter((s) => s.completed && s.completionStats);
   const chartData = completedSprints.slice(-6).map((s) => s.completionStats!.completionPercentage ?? 0);
   while (chartData.length < 6) chartData.unshift(0);
+  const hasChartData = chartData.some((p) => p > 0);
+
+  const completedMilestonesCount = milestones.filter((m) => m.status === "completed").length;
+
+  function getSprintProgress(sprint: Sprint) {
+    const start = new Date(sprint.weekStartDate).getTime();
+    const end = new Date(sprint.weekEndDate).getTime();
+    const now = Date.now();
+    if (now < start) return { pct: 0, daysRemaining: Math.ceil((end - now) / 86400000) };
+    if (now > end) return { pct: 100, daysRemaining: 0 };
+    const pct = Math.round(((now - start) / (end - start)) * 100);
+    const daysRemaining = Math.ceil((end - now) / 86400000);
+    return { pct, daysRemaining };
+  }
+  const sprintProgress = currentSprint ? getSprintProgress(currentSprint) : null;
+
+  function toggleMilestoneExpanded(id: string) {
+    setExpandedMilestoneIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+  function getTasksForMilestone(milestoneId: string) {
+    const list = tasks.filter((t) => t.milestoneId === milestoneId);
+    const done = list.filter((t) => t.status === "done").length;
+    return { list, done, total: list.length };
+  }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-12">
       {fromOnboarding && (
         <div className="rounded-xl border border-[#e2e8f0] dark:border-slate-700 bg-[#f0f9ff] dark:bg-slate-800/50 p-4">
           <p className="text-sm text-[#0f172a] dark:text-white">
@@ -232,14 +222,13 @@ export default function WorkspaceOverviewPage() {
         </div>
       )}
 
-      {/* Top header bar */}
       <div>
         <h1 className="text-2xl font-bold text-[#111418] dark:text-white">Welcome back, Founder</h1>
         <p className="text-[#5f6368] dark:text-gray-400 text-sm mt-0.5">Your startup workspace</p>
       </div>
 
-      {/* Four metric cards - reference style with icons */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Metric cards — clearer labels, more spacing */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
         <div className="bg-white dark:bg-[#1a2530] rounded-2xl border border-[#e8eaed] dark:border-white/5 p-5 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-start justify-between">
             <div className="p-2 rounded-xl bg-primary/10">
@@ -250,7 +239,10 @@ export default function WorkspaceOverviewPage() {
           <p className="text-3xl font-extrabold text-[#111418] dark:text-white mt-3">{taskStats.done}</p>
           <p className="text-xs text-green-600 dark:text-green-400 font-medium mt-0.5">{taskStats.total} total</p>
         </div>
-        <div className="bg-white dark:bg-[#1a2530] rounded-2xl border border-[#e8eaed] dark:border-white/5 p-5 shadow-sm hover:shadow-md transition-shadow">
+        <a
+          href="#milestones"
+          className="bg-white dark:bg-[#1a2530] rounded-2xl border border-[#e8eaed] dark:border-white/5 p-5 shadow-sm hover:shadow-md transition-shadow block text-left hover:border-primary/30"
+        >
           <div className="flex items-start justify-between">
             <div className="p-2 rounded-xl bg-primary/10">
               <span className="material-symbols-outlined text-primary text-[24px]">timeline</span>
@@ -258,19 +250,19 @@ export default function WorkspaceOverviewPage() {
             <p className="text-xs font-medium text-[#5f6368] dark:text-gray-400">Milestones</p>
           </div>
           <p className="text-3xl font-extrabold text-[#111418] dark:text-white mt-3">
-            {milestones.filter((m) => m.status === "completed").length}/{milestones.length}
+            {completedMilestonesCount}/{milestones.length}
           </p>
-          <p className="text-xs text-[#5f6368] dark:text-gray-400 mt-0.5">completed</p>
-        </div>
+          <p className="text-xs text-[#5f6368] dark:text-gray-400 mt-0.5">{milestones.length ? "completed · click to view" : "Add milestones to get started"}</p>
+        </a>
         <div className="bg-white dark:bg-[#1a2530] rounded-2xl border border-[#e8eaed] dark:border-white/5 p-5 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-start justify-between">
             <div className="p-2 rounded-xl bg-primary/10">
               <span className="material-symbols-outlined text-primary text-[24px]">update</span>
             </div>
-            <p className="text-xs font-medium text-[#5f6368] dark:text-gray-400">Sprint progress</p>
+            <p className="text-xs font-medium text-[#5f6368] dark:text-gray-400">Sprint completion</p>
           </div>
           <p className="text-3xl font-extrabold text-[#111418] dark:text-white mt-3">{completionPct}%</p>
-          <p className="text-xs text-[#5f6368] dark:text-gray-400 mt-0.5">this workspace</p>
+          <p className="text-xs text-[#5f6368] dark:text-gray-400 mt-0.5">task completion in this workspace</p>
         </div>
         <div className="bg-white dark:bg-[#1a2530] rounded-2xl border border-[#e8eaed] dark:border-white/5 p-5 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-start justify-between">
@@ -286,34 +278,48 @@ export default function WorkspaceOverviewPage() {
 
       {/* Chart + Quick actions row */}
       <div className="grid lg:grid-cols-3 gap-6">
-        {/* Execution over time chart card */}
         <div className="lg:col-span-2 bg-white dark:bg-[#1a2530] rounded-2xl border border-[#e8eaed] dark:border-white/5 p-6 shadow-sm">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-bold text-[#111418] dark:text-white">Execution over time</h3>
-            <span className="text-xs text-[#5f6368] dark:text-gray-400">Past 6 sprints</span>
-          </div>
-          <div className="flex items-end gap-2 h-36">
-            {chartData.map((pct, i) => (
-              <div key={i} className="flex-1 flex flex-col items-center gap-1">
-                <div
-                  className="w-full rounded-t-md min-h-[8px] transition-all bg-primary/80"
-                  style={{ height: `${Math.max(8, (pct / 100) * 120)}px` }}
-                />
-                <span className="text-[10px] font-medium text-[#9aa0a6] dark:text-gray-500">S{i + 1}</span>
+          <h2 className="text-lg font-bold text-[#111418] dark:text-white mb-1">Execution over time</h2>
+          <span className="text-xs text-[#5f6368] dark:text-gray-400">Past 6 sprints</span>
+          {hasChartData ? (
+            <>
+              <div className="flex items-end gap-2 h-36 mt-4">
+                {chartData.map((pct, i) => (
+                  <div key={i} className="flex-1 flex flex-col items-center gap-1">
+                    <div
+                      className="w-full rounded-t-md min-h-[8px] transition-all bg-primary/80"
+                      style={{ height: `${Math.max(8, (pct / 100) * 120)}px` }}
+                    />
+                    <span className="text-[10px] font-medium text-[#9aa0a6] dark:text-gray-500">S{i + 1}</span>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-          <div className="flex gap-4 mt-3">
-            <div className="flex items-center gap-1.5">
-              <div className="w-2.5 h-2.5 rounded-full bg-primary" />
-              <span className="text-xs text-[#5f6368] dark:text-gray-400">Completion %</span>
+              <div className="flex gap-4 mt-3">
+                <div className="flex items-center gap-1.5">
+                  <div className="w-2.5 h-2.5 rounded-full bg-primary" />
+                  <span className="text-xs text-[#5f6368] dark:text-gray-400">Completion %</span>
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="mt-6 py-8 px-4 rounded-xl bg-gray-50 dark:bg-white/5 border border-dashed border-gray-200 dark:border-white/10 text-center">
+              <p className="text-[#111418] dark:text-white font-medium">No tasks tracked yet</p>
+              <p className="text-sm text-[#5f6368] dark:text-gray-400 mt-1 max-w-sm mx-auto">
+                Create a sprint, add tasks, and complete them to see your execution trend here.
+              </p>
+              <Link
+                href={`/dashboard/${workspaceId}/sprints`}
+                className="inline-flex items-center gap-2 mt-4 rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold hover:bg-primary/90"
+              >
+                <span className="material-symbols-outlined text-lg">update</span>
+                Go to Sprints
+              </Link>
             </div>
-          </div>
+          )}
         </div>
 
-        {/* Quick actions - reference style */}
         <div className="flex flex-col gap-3">
-          <h3 className="font-bold text-sm text-[#5f6368] dark:text-gray-400 uppercase tracking-wider">Quick actions</h3>
+          <h2 className="text-lg font-bold text-[#111418] dark:text-white">Quick actions</h2>
           <div className="grid grid-cols-2 gap-3">
             <Link
               href={`/dashboard/${workspaceId}/sprints`}
@@ -322,255 +328,267 @@ export default function WorkspaceOverviewPage() {
               <span className="material-symbols-outlined text-primary text-[28px]">update</span>
               <span className="text-xs font-semibold text-[#111418] dark:text-white">New sprint</span>
             </Link>
-            <button
-              type="button"
-              onClick={() => document.getElementById("log-validation")?.scrollIntoView({ behavior: "smooth" })}
-              className="flex flex-col items-center justify-center gap-2 p-4 rounded-xl border border-[#e8eaed] dark:border-white/5 bg-white dark:bg-[#1a2530] shadow-sm hover:shadow-md hover:border-primary/30 transition-all text-center"
-            >
-              <span className="material-symbols-outlined text-primary text-[28px]">reviews</span>
-              <span className="text-xs font-semibold text-[#111418] dark:text-white">Log validation</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => document.getElementById("add-milestone")?.scrollIntoView({ behavior: "smooth" })}
-              className="flex flex-col items-center justify-center gap-2 p-4 rounded-xl border border-[#e8eaed] dark:border-white/5 bg-white dark:bg-[#1a2530] shadow-sm hover:shadow-md hover:border-primary/30 transition-all text-center"
-            >
-              <span className="material-symbols-outlined text-primary text-[28px]">timeline</span>
-              <span className="text-xs font-semibold text-[#111418] dark:text-white">Add milestone</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => document.getElementById("add-task")?.scrollIntoView({ behavior: "smooth" })}
-              className="flex flex-col items-center justify-center gap-2 p-4 rounded-xl border border-[#e8eaed] dark:border-white/5 bg-white dark:bg-[#1a2530] shadow-sm hover:shadow-md hover:border-primary/30 transition-all text-center"
-            >
-              <span className="material-symbols-outlined text-primary text-[28px]">add_task</span>
-              <span className="text-xs font-semibold text-[#111418] dark:text-white">Add task</span>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Current sprint */}
-      {currentSprint && (
-        <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-6">
-          <h3 className="font-bold text-lg mb-4">Current sprint</h3>
-          <p className="text-sm text-gray-500 mb-2">
-            {currentSprint.weekStartDate} → {currentSprint.weekEndDate}
-            {currentSprint.locked && (
-              <span className="ml-2 px-2 py-0.5 rounded bg-primary/10 text-primary text-xs font-bold">
-                Locked
-              </span>
+            {canWrite && (
+              <button
+                type="button"
+                onClick={() => { setShowAddMilestoneForm(true); setShowAddTaskForm(false); }}
+                className="flex flex-col items-center justify-center gap-2 p-4 rounded-xl border border-[#e8eaed] dark:border-white/5 bg-white dark:bg-[#1a2530] shadow-sm hover:shadow-md hover:border-primary/30 transition-all text-center"
+              >
+                <span className="material-symbols-outlined text-primary text-[28px]">timeline</span>
+                <span className="text-xs font-semibold text-[#111418] dark:text-white">Add milestone</span>
+              </button>
             )}
-          </p>
-          <ul className="list-disc list-inside text-sm text-gray-600 dark:text-gray-400 mb-4">
-            {currentSprint.goals.slice(0, 5).map((g) => (
-              <li key={g.id}>{g.text}</li>
-            ))}
-          </ul>
-          <Link
-            href={`/dashboard/${workspaceId}/sprints`}
-            className="text-primary text-sm font-semibold hover:underline"
-          >
-            View sprint details →
-          </Link>
-        </div>
-      )}
-
-      {/* Add milestone (founder/team) */}
-      {canWrite && (
-        <form id="add-milestone" onSubmit={handleAddMilestone} className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-6 flex flex-wrap gap-4 items-end">
-          <div className="flex-1 min-w-[200px]">
-            <label className="block text-sm font-medium mb-1">New milestone</label>
-            <input
-              type="text"
-              value={newMilestoneTitle}
-              onChange={(e) => setNewMilestoneTitle(e.target.value)}
-              placeholder="Milestone title"
-              className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 py-2"
-            />
-          </div>
-          <div className="flex-1 min-w-[200px]">
-            <input
-              type="text"
-              value={newMilestoneDesc}
-              onChange={(e) => setNewMilestoneDesc(e.target.value)}
-              placeholder="Description (optional)"
-              className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 py-2"
-            />
-          </div>
-          <button type="submit" disabled={addingMilestone} className="rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold disabled:opacity-50">
-            {addingMilestone ? "Adding…" : "Add milestone"}
-          </button>
-        </form>
-      )}
-
-      {/* Add task */}
-      {canWrite && milestones.length > 0 && (
-        <form id="add-task" onSubmit={handleAddTask} className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-6 flex flex-wrap gap-4 items-end">
-          <div className="flex-1 min-w-[200px]">
-            <label className="block text-sm font-medium mb-1">New task</label>
-            <input
-              type="text"
-              value={newTaskTitle}
-              onChange={(e) => setNewTaskTitle(e.target.value)}
-              placeholder="Task title"
-              className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 py-2"
-            />
-          </div>
-          <div className="w-48">
-            <select
-              value={newTaskMilestoneId}
-              onChange={(e) => setNewTaskMilestoneId(e.target.value)}
-              className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 py-2"
-            >
-              <option value="">Milestone</option>
-              {milestones.map((m) => (
-                <option key={m.id} value={m.id}>{m.title}</option>
-              ))}
-            </select>
-          </div>
-          <button type="submit" disabled={addingTask || !newTaskMilestoneId} className="rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold disabled:opacity-50">
-            {addingTask ? "Adding…" : "Add task"}
-          </button>
-        </form>
-      )}
-
-      {/* Milestones */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-6">
-        <h3 className="font-bold text-lg mb-4">Milestones</h3>
-        <div className="space-y-3">
-          {milestones.length === 0 ? (
-            <p className="text-gray-500 text-sm">No milestones yet. Add one above.</p>
-          ) : (
-            milestones.map((m) => (
-              <div
-                key={m.id}
-                className="flex items-center justify-between gap-4 p-3 rounded-xl border border-gray-100 dark:border-gray-700"
+            {canWrite && milestones.length > 0 && (
+              <button
+                type="button"
+                onClick={() => { setShowAddTaskForm(true); setShowAddMilestoneForm(false); }}
+                className="flex flex-col items-center justify-center gap-2 p-4 rounded-xl border border-[#e8eaed] dark:border-white/5 bg-white dark:bg-[#1a2530] shadow-sm hover:shadow-md hover:border-primary/30 transition-all text-center"
               >
-                <div className="flex items-center gap-3 min-w-0">
-                  <div
-                    className={`w-2 h-2 shrink-0 rounded-full ${
-                      m.status === "completed"
-                        ? "bg-green-500"
-                        : m.status === "active"
-                        ? "bg-primary"
-                        : "bg-gray-400"
-                    }`}
-                  />
-                  <span className="font-medium text-[#111418] dark:text-white truncate">{m.title}</span>
-                </div>
-                {canWrite ? (
-                  <select
-                    value={m.status}
-                    onChange={(e) => handleMilestoneStatusChange(m.id, e.target.value as MilestoneStatus)}
-                    disabled={updatingMilestoneId === m.id}
-                    className="shrink-0 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-900 px-3 py-1.5 text-sm font-medium text-[#111418] dark:text-white disabled:opacity-50"
-                  >
-                    <option value="planned">Planned</option>
-                    <option value="active">Active</option>
-                    <option value="completed">Done</option>
-                  </select>
-                ) : (
-                  <span className="text-xs font-bold px-2 py-1 rounded bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 uppercase shrink-0">
-                    {m.status}
-                  </span>
-                )}
+                <span className="material-symbols-outlined text-primary text-[28px]">add_task</span>
+                <span className="text-xs font-semibold text-[#111418] dark:text-white">Add task</span>
+              </button>
+            )}
+          </div>
+
+          {canWrite && showAddMilestoneForm && (
+            <form onSubmit={handleAddMilestone} className="p-4 rounded-xl border border-[#e8eaed] dark:border-white/10 bg-gray-50 dark:bg-white/5 space-y-3">
+              <h3 className="text-sm font-bold text-[#111418] dark:text-white">New milestone</h3>
+              <input
+                type="text"
+                value={newMilestoneTitle}
+                onChange={(e) => setNewMilestoneTitle(e.target.value)}
+                placeholder="Milestone title"
+                className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-3 py-2 text-sm"
+              />
+              <input
+                type="text"
+                value={newMilestoneDesc}
+                onChange={(e) => setNewMilestoneDesc(e.target.value)}
+                placeholder="Description (optional)"
+                className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-3 py-2 text-sm"
+              />
+              <div className="flex gap-2">
+                <button type="submit" disabled={addingMilestone || !newMilestoneTitle.trim()} className="rounded-lg h-9 px-3 bg-primary text-white text-sm font-bold disabled:opacity-50">
+                  {addingMilestone ? "Adding…" : "Add"}
+                </button>
+                <button type="button" onClick={() => setShowAddMilestoneForm(false)} className="rounded-lg h-9 px-3 bg-gray-200 dark:bg-gray-700 text-[#111418] dark:text-white text-sm font-medium">
+                  Cancel
+                </button>
               </div>
-            ))
+            </form>
           )}
-        </div>
-      </div>
-
-      {/* Add validation (team/founder) */}
-      {canWrite && sprints.length > 0 && milestones.length > 0 && (
-        <form id="log-validation" onSubmit={handleAddValidation} className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-6 space-y-4">
-          <h3 className="font-bold text-lg">Log validation</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium mb-1">Sprint</label>
+          {canWrite && showAddTaskForm && milestones.length > 0 && (
+            <form onSubmit={handleAddTask} className="p-4 rounded-xl border border-[#e8eaed] dark:border-white/10 bg-gray-50 dark:bg-white/5 space-y-3">
+              <h3 className="text-sm font-bold text-[#111418] dark:text-white">New task</h3>
+              <input
+                type="text"
+                value={newTaskTitle}
+                onChange={(e) => setNewTaskTitle(e.target.value)}
+                placeholder="Task title"
+                className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-3 py-2 text-sm"
+              />
               <select
-                value={validationSprintId}
-                onChange={(e) => setValidationSprintId(e.target.value)}
-                className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 py-2"
-              >
-                <option value="">Select sprint</option>
-                {sprints.map((s) => (
-                  <option key={s.id} value={s.id}>{s.weekStartDate} → {s.weekEndDate}</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Milestone</label>
-              <select
-                value={validationMilestoneId}
-                onChange={(e) => setValidationMilestoneId(e.target.value)}
-                className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 py-2"
+                value={newTaskMilestoneId}
+                onChange={(e) => setNewTaskMilestoneId(e.target.value)}
+                className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-3 py-2 text-sm"
               >
                 <option value="">Select milestone</option>
                 {milestones.map((m) => (
                   <option key={m.id} value={m.id}>{m.title}</option>
                 ))}
               </select>
+              <div className="flex gap-2">
+                <button type="submit" disabled={addingTask || !newTaskTitle.trim() || !newTaskMilestoneId} className="rounded-lg h-9 px-3 bg-primary text-white text-sm font-bold disabled:opacity-50">
+                  {addingTask ? "Adding…" : "Add"}
+                </button>
+                <button type="button" onClick={() => setShowAddTaskForm(false)} className="rounded-lg h-9 px-3 bg-gray-200 dark:bg-gray-700 text-[#111418] dark:text-white text-sm font-medium">
+                  Cancel
+                </button>
+              </div>
+            </form>
+          )}
+        </div>
+      </div>
+
+      {/* Current sprint — prominent section with progress */}
+      {currentSprint && (
+        <div className="bg-primary/5 dark:bg-primary/10 rounded-2xl border border-primary/20 dark:border-primary/30 p-6">
+          <h2 className="text-xl font-bold text-[#111418] dark:text-white mb-1">Current sprint</h2>
+          <p className="text-sm text-[#5f6368] dark:text-gray-400 mb-4">
+            {currentSprint.weekStartDate} → {currentSprint.weekEndDate}
+            {currentSprint.locked && (
+              <span className="ml-2 px-2 py-0.5 rounded bg-primary/20 text-primary text-xs font-bold">
+                Locked
+              </span>
+            )}
+          </p>
+          {sprintProgress !== null && (
+            <div className="mb-4">
+              <div className="flex justify-between text-xs text-[#5f6368] dark:text-gray-400 mb-1">
+                <span>Sprint timeline</span>
+                <span>{sprintProgress.daysRemaining} days remaining</span>
+              </div>
+              <div className="h-2 w-full rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden">
+                <div
+                  className="h-full rounded-full bg-primary transition-all"
+                  style={{ width: `${sprintProgress.pct}%` }}
+                />
+              </div>
             </div>
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-1">Type</label>
-            <select
-              value={validationType}
-              onChange={(e) => setValidationType(e.target.value as ValidationEntry["type"])}
-              className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 py-2"
-            >
-              <option value="interview">Interview</option>
-              <option value="survey">Survey</option>
-              <option value="experiment">Experiment</option>
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-1">Summary</label>
-            <input
-              type="text"
-              value={validationSummary}
-              onChange={(e) => setValidationSummary(e.target.value)}
-              placeholder="Brief summary"
-              required
-              className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 py-2"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-1">Notes (optional)</label>
-            <textarea
-              value={validationNotes}
-              onChange={(e) => setValidationNotes(e.target.value)}
-              placeholder="Qualitative notes"
-              rows={2}
-              className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 py-2"
-            />
-          </div>
-          <button type="submit" disabled={addingValidation} className="rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold disabled:opacity-50">
-            {addingValidation ? "Adding…" : "Add validation"}
-          </button>
-        </form>
+          )}
+          {currentSprint.goals.length > 0 && (
+            <ul className="list-disc list-inside text-sm text-gray-600 dark:text-gray-400 mb-4">
+              {currentSprint.goals.slice(0, 5).map((g) => (
+                <li key={g.id}>{g.text}</li>
+              ))}
+            </ul>
+          )}
+          <Link
+            href={`/dashboard/${workspaceId}/sprints`}
+            className="text-primary text-sm font-semibold hover:underline inline-flex items-center gap-1"
+          >
+            View sprint details
+            <span className="material-symbols-outlined text-lg">arrow_forward</span>
+          </Link>
+        </div>
       )}
 
-      {/* Recent validations */}
-      {validations.length > 0 && (
-        <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-6">
-          <h3 className="font-bold text-lg mb-4">Recent validation entries</h3>
-          <ul className="space-y-3">
-            {validations.slice(0, 5).map((v) => (
-              <li key={v.id} className="p-3 rounded-lg border border-gray-100 dark:border-gray-700">
-                <p className="font-medium text-sm text-[#111418] dark:text-white">{v.summary}</p>
-                <p className="text-xs text-gray-500 capitalize">{v.type} · {new Date(v.createdAt).toLocaleDateString()}</p>
-              </li>
-            ))}
-          </ul>
+      {/* Empty state when no tasks and no milestones */}
+      {taskStats.total === 0 && milestones.length === 0 && canWrite && (
+        <div className="bg-[#f0f9ff] dark:bg-primary/10 rounded-2xl border border-primary/20 p-8 text-center">
+          <h2 className="text-lg font-bold text-[#111418] dark:text-white">Get started</h2>
+          <p className="text-sm text-[#5f6368] dark:text-gray-400 mt-2 max-w-md mx-auto">
+            Create your first milestone to break down your goals, then add tasks to track execution. You can also create a sprint and assign tasks to it.
+          </p>
+          <div className="flex flex-wrap justify-center gap-3 mt-6">
+            <button
+              type="button"
+              onClick={() => { setShowAddMilestoneForm(true); setShowAddTaskForm(false); }}
+              className="inline-flex items-center gap-2 rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold hover:bg-primary/90"
+            >
+              <span className="material-symbols-outlined text-lg">timeline</span>
+              Add first milestone
+            </button>
+            <Link
+              href={`/dashboard/${workspaceId}/sprints`}
+              className="inline-flex items-center gap-2 rounded-lg h-10 px-4 bg-gray-200 dark:bg-gray-700 text-[#111418] dark:text-white text-sm font-bold hover:bg-gray-300 dark:hover:bg-gray-600"
+            >
+              <span className="material-symbols-outlined text-lg">update</span>
+              Go to Sprints
+            </Link>
+          </div>
+        </div>
+      )}
+
+      {/* Milestones — expandable with tasks and progress */}
+      <div id="milestones" className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-6 scroll-mt-4">
+        <h2 className="text-lg font-bold text-[#111418] dark:text-white mb-4">Milestones</h2>
+        <div className="space-y-2">
+          {milestones.length === 0 ? (
+            <p className="text-gray-500 text-sm py-4">
+              No milestones yet. Use <strong>Quick actions</strong> above to add your first milestone.
+            </p>
+          ) : (
+            milestones.map((m) => {
+              const { list: milestoneTasks, done: tasksDone, total: tasksTotal } = getTasksForMilestone(m.id);
+              const isExpanded = expandedMilestoneIds.has(m.id);
+              return (
+                <div
+                  key={m.id}
+                  className="rounded-xl border border-gray-100 dark:border-gray-700 overflow-hidden"
+                >
+                  <button
+                    type="button"
+                    onClick={() => toggleMilestoneExpanded(m.id)}
+                    className="w-full flex items-center justify-between gap-4 p-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <span className="material-symbols-outlined text-lg text-gray-400">
+                        {isExpanded ? "expand_less" : "expand_more"}
+                      </span>
+                      <div
+                        className={`w-2 h-2 shrink-0 rounded-full ${
+                          m.status === "completed"
+                            ? "bg-green-500"
+                            : m.status === "active"
+                            ? "bg-primary"
+                            : "bg-gray-400"
+                        }`}
+                      />
+                      <span className="font-medium text-[#111418] dark:text-white truncate">{m.title}</span>
+                      <span className="text-xs text-[#5f6368] dark:text-gray-400 shrink-0">
+                        {tasksTotal > 0 ? `${tasksDone}/${tasksTotal} tasks` : "No tasks"}
+                      </span>
+                    </div>
+                    {canWrite ? (
+                      <select
+                        value={m.status}
+                        onClick={(e) => e.stopPropagation()}
+                        onChange={(e) => handleMilestoneStatusChange(m.id, e.target.value as MilestoneStatus)}
+                        disabled={updatingMilestoneId === m.id}
+                        className="shrink-0 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-900 px-3 py-1.5 text-sm font-medium text-[#111418] dark:text-white disabled:opacity-50"
+                      >
+                        <option value="planned">Planned</option>
+                        <option value="active">Active</option>
+                        <option value="completed">Done</option>
+                      </select>
+                    ) : (
+                      <span className="text-xs font-bold px-2 py-1 rounded bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 uppercase shrink-0">
+                        {m.status}
+                      </span>
+                    )}
+                  </button>
+                  {isExpanded && (
+                    <div className="border-t border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/50 px-3 py-3 pl-11">
+                      {milestoneTasks.length === 0 ? (
+                        <p className="text-sm text-gray-500">No tasks in this milestone. Add one via Quick actions.</p>
+                      ) : (
+                        <ul className="space-y-1.5">
+                          {milestoneTasks.map((t) => (
+                            <li key={t.id} className="flex items-center gap-2 text-sm">
+                              <span className={`material-symbols-outlined text-lg ${
+                                t.status === "done" ? "text-green-600 dark:text-green-400" : "text-gray-400"
+                              }`}>
+                                {t.status === "done" ? "check_circle" : "radio_button_unchecked"}
+                              </span>
+                              <span className={t.status === "done" ? "text-gray-500 dark:text-gray-400 line-through" : "text-[#111418] dark:text-white"}>
+                                {t.title}
+                              </span>
+                              <span className="text-xs text-[#5f6368] dark:text-gray-400 uppercase">{t.status.replace("_", " ")}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            })
+          )}
+        </div>
+      </div>
+
+      {/* Hint when milestones exist but no tasks yet */}
+      {taskStats.total === 0 && milestones.length > 0 && canWrite && (
+        <div className="rounded-xl border border-primary/20 bg-primary/5 dark:bg-primary/10 p-4 flex flex-wrap items-center justify-between gap-3">
+          <p className="text-sm text-[#111418] dark:text-white">
+            Add tasks to your milestones to track execution and see progress on the chart.
+          </p>
+          <button
+            type="button"
+            onClick={() => { setShowAddTaskForm(true); setShowAddMilestoneForm(false); }}
+            className="inline-flex items-center gap-1.5 rounded-lg h-9 px-3 bg-primary text-white text-sm font-bold hover:bg-primary/90"
+          >
+            <span className="material-symbols-outlined text-lg">add_task</span>
+            Add task
+          </button>
         </div>
       )}
 
       {/* AI insights */}
       {(executionInsights.length > 0 || validationInsights.length > 0) && (
         <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-6">
-          <h3 className="font-bold text-lg mb-4">Insights</h3>
+          <h2 className="text-lg font-bold text-[#111418] dark:text-white mb-4">Insights</h2>
           <div className="space-y-3">
             {executionInsights.slice(0, 3).map((i) => (
               <div
@@ -600,7 +618,7 @@ export default function WorkspaceOverviewPage() {
         </div>
       )}
 
-      <div className="flex flex-wrap gap-4">
+      <div className="flex flex-wrap gap-4 pt-2">
         <Link
           href={`/dashboard/${workspaceId}/sprints`}
           className="inline-flex items-center gap-2 rounded-lg h-10 px-4 bg-primary/10 text-primary text-sm font-bold hover:bg-primary/20"
@@ -621,16 +639,9 @@ export default function WorkspaceOverviewPage() {
             className="inline-flex items-center gap-2 rounded-lg h-10 px-4 bg-gray-100 dark:bg-gray-800 text-[#111418] dark:text-white text-sm font-bold hover:bg-gray-200 dark:hover:bg-gray-700"
           >
             <span className="material-symbols-outlined text-lg">summarize</span>
-            Investor view
+            Investor readiness
           </Link>
         )}
-        <Link
-          href={`/dashboard/${workspaceId}/ledger`}
-          className="inline-flex items-center gap-2 rounded-lg h-10 px-4 bg-gray-100 dark:bg-gray-800 text-[#111418] dark:text-white text-sm font-bold hover:bg-gray-200 dark:hover:bg-gray-700"
-        >
-          <span className="material-symbols-outlined text-lg">account_tree</span>
-          Ledger
-        </Link>
       </div>
     </div>
   );

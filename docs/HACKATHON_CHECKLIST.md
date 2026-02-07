@@ -13,7 +13,7 @@
 | **Problem Understanding** | 20% | Demo script that maps each problem statement item to a feature |
 | **Business Logic** | 20% | Roles, validation flow, sprint lifecycle, workspace + team |
 | **UI/UX** | 15% | Consistent design, clear navigation, one clear demo path |
-| **Innovation & Scalability** | 15% | AI insights, investor pitch generator, ledger, future scope |
+| **Innovation & Scalability** | 15% | AI insights, investor pitch generator, future scope |
 
 ---
 
@@ -32,10 +32,8 @@
 - **Demo:** Dashboard → create workspace → open it → Team → edit name/stage → Save
 
 ### 3. Feedback & Validation System
-- [x] **Collect internal or external feedback** — Log validation (interview / survey / experiment)
-- [x] **Idea validation metrics or qualitative inputs** — Summary + qualitative notes per entry
-- [x] **Support for iteration** — Log per sprint + milestone; recent validations on Overview
-- **Demo:** Overview → scroll to “Log validation” → choose sprint, milestone, type, summary, notes → Add validation
+- [x] **Idea validation metrics or qualitative inputs** — Validation data used in insights and investor view
+- [x] **Support for iteration** — Validation entries (if any) feed into AI insights
 
 ### 4. Task & Milestone Tracking
 - [x] **Task creation, assignment, status** — Create task under milestone; ownerId; status: todo / in_progress / done
@@ -79,24 +77,18 @@
    Sprints → New sprint (dates, goals, assign tasks) → Lock sprint (“commitment hash to ledger”) → update task statuses → Close sprint (“completion hash”).  
    Show “Execution over time” chart and metrics.
 
-4. **Validation (45 s)**  
-   Scroll to “Log validation” → pick sprint, milestone, type (interview/survey/experiment), summary, notes → Add. Show “Recent validation entries.”
-
-5. **Analytics (45 s)**  
+4. **Analytics (45 s)**  
    Analytics tab → KPIs (tasks, milestones, sprint reliability, validation count) + both charts.
 
-6. **AI & investor (1 min)**  
+5. **AI & investor (1 min)**  
    Overview: if there’s data, show “Insights” (execution + validation).  
    Investor view: “Auto-generated pitch outline: Problem, Solution, Traction, Roadmap from our data.”
 
-7. **Trust / ledger (30 s)**  
-   Ledger tab → list of commitment & completion hashes + timestamps. “No tokens; verifiable execution history.”
-
-8. **Bonus: Payment (20 s)**  
+6. **Bonus: Payment (20 s)**  
    “We also have a dummy upgrade flow.” Open `/upgrade` → show Free vs Pro → click “Subscribe (demo)” → “No payment charged.”
 
-9. **Tech & innovation (30 s)**  
-   “Built with Next.js 15, Firebase, TypeScript. Rule-based AI today; we can plug in an LLM. Ledger can move to a real chain later.”
+7. **Tech & innovation (30 s)**  
+   “Built with Next.js 15, Firebase, TypeScript. Rule-based AI today; we can plug in an LLM. ”
 
 ---
 
@@ -116,12 +108,11 @@
 |-------------|------------------|
 | Login / roles | `/login`, `/signup`; Team page shows roles |
 | Startup profile & edit | Dashboard → workspace → **Team** (edit name/stage + invite) |
-| Validation | Overview → “Log validation” + recent validations |
+| Validation | Validation data in Analytics & investor view |
 | Tasks & milestones | Overview (add milestone/task); Sprints (assign, status) |
 | Analytics | **Analytics** tab |
 | AI insights | Overview “Insights” block; rule-based |
 | Investor pitch | **Investor view** (Problem, Solution, Traction, Roadmap) |
-| Ledger | **Ledger** tab |
 | Dummy payment | **/upgrade** |
 
 Good luck — you’ve got the features; nail the deployment and the demo.

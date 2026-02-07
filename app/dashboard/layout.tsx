@@ -16,8 +16,7 @@ const WORKSPACE_NAV = [
   { label: "Analytics", icon: "analytics", pathPart: "/analytics" },
   { label: "Team", icon: "groups", pathPart: "/team" },
   { label: "Integrations", icon: "hub", pathPart: "/integrations" },
-  { label: "Investor view", icon: "summarize", pathPart: "/investor" },
-  { label: "Ledger", icon: "account_tree", pathPart: "/ledger" },
+  { label: "Investor readiness", icon: "summarize", pathPart: "/investor" },
 ] as const;
 
 export default function DashboardLayout({

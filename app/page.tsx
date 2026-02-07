@@ -197,10 +197,6 @@ export default function LandingPage() {
                     <span className="text-[10px] font-semibold text-[#111418] dark:text-white">New sprint</span>
                   </div>
                   <div className="bg-white dark:bg-[#1a2530] p-3 rounded-xl border border-[#e8eaed] dark:border-white/5 shadow-sm flex flex-col items-center justify-center gap-1 text-center">
-                    <span className="material-symbols-outlined text-primary text-2xl">rate_review</span>
-                    <span className="text-[10px] font-semibold text-[#111418] dark:text-white">Log validation</span>
-                  </div>
-                  <div className="bg-white dark:bg-[#1a2530] p-3 rounded-xl border border-[#e8eaed] dark:border-white/5 shadow-sm flex flex-col items-center justify-center gap-1 text-center">
                     <span className="material-symbols-outlined text-primary text-2xl">flag</span>
                     <span className="text-[10px] font-semibold text-[#111418] dark:text-white">Add milestone</span>
                   </div>
@@ -319,11 +315,11 @@ export default function LandingPage() {
               <div className="absolute -bottom-6 -right-6 hidden xl:block p-4 bg-white dark:bg-[#1a2530] border border-gray-100 dark:border-white/5 rounded-xl shadow-xl">
                 <div className="flex items-center gap-3">
                   <div className="size-8 rounded-lg bg-primary/20 flex items-center justify-center">
-                    <span className="material-symbols-outlined text-primary text-xl">account_tree</span>
+                    <span className="material-symbols-outlined text-primary text-xl">verified</span>
                   </div>
                   <div>
-                    <p className="text-[10px] font-bold text-gray-400 uppercase">On-Chain Ledger</p>
-                    <p className="text-xs font-bold">Execution Verified</p>
+                    <p className="text-[10px] font-bold text-gray-400 uppercase">Execution</p>
+                    <p className="text-xs font-bold">Tracked &amp; Verified</p>
                   </div>
                 </div>
               </div>
@@ -673,7 +669,7 @@ export default function LandingPage() {
           <div className="text-center mb-12">
             <span className="text-primary font-bold text-sm tracking-widest uppercase mb-4 block">Security &amp; Transparency</span>
             <h2 className="text-4xl md:text-5xl font-extrabold leading-tight tracking-tight text-[#111418] dark:text-white">
-              Trust Layer: Blockchain Ledger
+              Security &amp; Transparency
             </h2>
           </div>
           <div className="flex flex-col lg:flex-row items-center gap-10 rounded-xl border border-[#dbe0e6] dark:border-[#2d3945] bg-white dark:bg-[#1a2632] p-8 shadow-xl overflow-hidden">

@@ -4,17 +4,17 @@ Unified operational workspace for early-stage startup founders. Built for IIT Ja
 
 - **Execution tracking** — Startup workspaces, milestones, tasks, weekly sprints
 - **Roles** — Founder (full), Team member (limited write), Investor (read-only)
-- **Validation** — Log interviews, surveys, experiments per sprint/milestone
+- **Validation** — Validation data can be used in insights and investor view
 - **Analytics** — Tasks completed over time, sprint reliability, validation activity
 - **AI layer** — Rule-based execution and validation insights; investor summary generator
-- **Trust layer** — Execution & Validation Ledger (hashes + timestamps, no tokens/wallets)
+- **Trust** — Security and transparency for execution data
 
 ## Tech stack
 
 - **Frontend:** Next.js 15 (App Router), TypeScript, Tailwind; Stitch-derived UI preserved
 - **Backend:** Firebase Auth + Firestore
 - **State:** React state / context
-- **AI / Blockchain:** Mocked rule-based logic and hash ledger
+- **AI:** Rule-based insights and investor summary
 
 ## Setup
 
@@ -53,7 +53,6 @@ Unified operational workspace for early-stage startup founders. Built for IIT Ja
    - `tasks`: `sprintId` (Asc), `updatedAt` (Desc)
    - `sprints`: `workspaceId` (Asc), `createdAt` (Desc)
    - `validations`: `workspaceId` (Asc), `createdAt` (Desc)
-   - `ledger`: `workspaceId` (Asc), `timestamp` (Desc)
 
 5. **Run**
 
@@ -67,16 +66,14 @@ Unified operational workspace for early-stage startup founders. Built for IIT Ja
 
 1. **Sign up** → Create a **Startup workspace** (you’re the founder).
 2. **Overview** → Add **milestones**, then **tasks** under milestones.
-3. **Sprints** → **New sprint** (week range, goals, assign tasks) → **Lock sprint** (writes commitment hash to ledger) → During week, update task statuses → **Close sprint** (completion summary + completion hash to ledger).
-4. **Log validation** on the overview (sprint, milestone, type, summary).
+3. **Sprints** → **New sprint** (week range, goals, assign tasks) → **Lock sprint** → During week, update task statuses → **Close sprint** (completion summary).
+4. Track execution and view insights on the overview.
 5. **Analytics** — View tasks over time and sprint reliability.
 6. **Investor view** (founder only) — Generated summary (problem, execution, validation, roadmap).
-7. **Ledger** — List commitment/completion hashes and timestamps.
 
 ## Hackathon notes
 
 - **AI:** Execution/validation insights and investor summary are **rule-based** (see `lib/ai-mock.ts`). Replace with LLM/API when needed.
-- **Blockchain:** Ledger uses **local hashes** only (see `lib/ledger-mock.ts`). Replace with testnet/chain writes for production.
 - **Workspace membership:** Adding team members/investors to a workspace is not implemented in the UI; extend `workspace.members` and role checks as needed.
 
 ## License
