@@ -3,6 +3,15 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
+import {
   getWorkspace,
   getSprints,
   getMilestones,
@@ -57,17 +66,28 @@ export default function AnalyticsPage() {
         )
       : 0;
 
-  const tasksCompletedOverTime = completedSprints.map((s) => ({
-    label: s.weekStartDate,
-    completed: s.completionStats!.tasksCompleted,
-    total: s.completionStats!.tasksTotal,
-    pct: s.completionStats!.completionPercentage,
-  }));
+  // Last 6 sprints by date (so charts work even before any sprint is "closed")
+  const lastSprints = [...sprints]
+    .sort((a, b) => new Date(b.weekStartDate).getTime() - new Date(a.weekStartDate).getTime())
+    .slice(0, 6)
+    .reverse();
 
-  const validationsPerSprint = completedSprints.map((s) => ({
-    label: s.weekStartDate,
-    count: validations.filter((v) => v.sprintId === s.id).length,
-  }));
+  const tasksChartData = lastSprints.map((s) => {
+    const sprintTasks = tasks.filter((t) => t.sprintId === s.id);
+    const total = sprintTasks.length;
+    const completed = sprintTasks.filter((t) => t.status === "done").length;
+    const pct = total ? Math.round((completed / total) * 100) : (s.completionStats?.completionPercentage ?? 0);
+    const label = s.weekStartDate.slice(5); // "MM-DD"
+    return { name: label, pct, completed, total, fullLabel: s.weekStartDate };
+  });
+
+  const validationsChartData = lastSprints.map((s) => {
+    const count = validations.filter((v) => v.sprintId === s.id).length;
+    const label = s.weekStartDate.slice(5);
+    return { name: label, count, fullLabel: s.weekStartDate };
+  });
+
+  const primaryColor = "#137fec";
 
   const milestonesCompleted = milestones.filter((m) => m.status === "completed").length;
   const totalTasks = tasks.length;
@@ -109,38 +129,61 @@ export default function AnalyticsPage() {
 
       <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-6">
         <h3 className="font-bold text-lg mb-6">Tasks completed over time</h3>
-        <div className="flex items-end justify-between gap-2 h-40">
-          {tasksCompletedOverTime.slice(-8).map((d, i) => (
-            <div key={d.label} className="flex-1 flex flex-col items-center gap-1">
-              <div
-                className="w-full bg-primary rounded-t min-h-[4px] transition-all"
-                style={{ height: `${Math.max(4, d.pct)}%` }}
-              />
-              <span className="text-[10px] font-bold text-gray-500 truncate w-full text-center">
-                {d.label.slice(5)}
-              </span>
+        {tasksChartData.length === 0 ? (
+          <div className="flex items-center justify-center h-64 rounded-xl bg-gray-50 dark:bg-gray-900/50 border border-dashed border-gray-200 dark:border-gray-700">
+            <p className="text-sm text-gray-500 dark:text-gray-400">Create and use sprints to see completion over time.</p>
+          </div>
+        ) : (
+          <>
+            <div className="h-64 w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={tasksChartData} margin={{ top: 8, right: 16, left: 0, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" className="dark:stroke-gray-600" />
+                  <XAxis dataKey="name" tick={{ fontSize: 12, fill: "#6b7280" }} axisLine={{ stroke: "#d1d5db" }} />
+                  <YAxis domain={[0, 100]} tick={{ fontSize: 12, fill: "#6b7280" }} axisLine={false} tickLine={false} tickFormatter={(v) => `${v}%`} />
+                  <Tooltip
+                    contentStyle={{ borderRadius: 8, border: "1px solid #e5e7eb" }}
+                    formatter={(value: number, _name: string, props: { payload: { completed?: number; total?: number } }) => {
+                      const p = props.payload;
+                      return [`${value}%${p.total != null ? ` (${p.completed}/${p.total} tasks)` : ""}`, "Completion"];
+                    }}
+                    labelFormatter={(_, payload) => payload[0]?.payload?.fullLabel ?? ""}
+                  />
+                  <Bar dataKey="pct" name="Completion" fill={primaryColor} radius={[4, 4, 0, 0]} maxBarSize={56} />
+                </BarChart>
+              </ResponsiveContainer>
             </div>
-          ))}
-        </div>
-        <p className="text-xs text-gray-400 mt-2">% completion per closed sprint</p>
+            <p className="text-xs text-gray-400 mt-2">% of tasks done per sprint (last 6 sprints)</p>
+          </>
+        )}
       </div>
 
       <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-6">
         <h3 className="font-bold text-lg mb-6">Validation activity per sprint</h3>
-        <div className="flex items-end justify-between gap-2 h-32">
-          {validationsPerSprint.slice(-8).map((d) => (
-            <div key={d.label} className="flex-1 flex flex-col items-center gap-1">
-              <div
-                className="w-full bg-primary/70 rounded-t min-h-[4px]"
-                style={{ height: `${Math.max(4, Math.min(100, d.count * 20))}%` }}
-              />
-              <span className="text-[10px] font-bold text-gray-500 truncate w-full text-center">
-                {d.label.slice(5)}
-              </span>
-              <span className="text-[10px] text-gray-400">{d.count}</span>
+        {validationsChartData.length === 0 ? (
+          <div className="flex items-center justify-center h-64 rounded-xl bg-gray-50 dark:bg-gray-900/50 border border-dashed border-gray-200 dark:border-gray-700">
+            <p className="text-sm text-gray-500 dark:text-gray-400">Sprint data will appear here once you have sprints.</p>
+          </div>
+        ) : (
+          <>
+            <div className="h-64 w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={validationsChartData} margin={{ top: 8, right: 16, left: 0, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" className="dark:stroke-gray-600" />
+                  <XAxis dataKey="name" tick={{ fontSize: 12, fill: "#6b7280" }} axisLine={{ stroke: "#d1d5db" }} />
+                  <YAxis allowDecimals={false} tick={{ fontSize: 12, fill: "#6b7280" }} axisLine={false} tickLine={false} />
+                  <Tooltip
+                    contentStyle={{ borderRadius: 8, border: "1px solid #e5e7eb" }}
+                    formatter={(value: number) => [`${value}`, "validations"]}
+                    labelFormatter={(_, payload) => payload[0]?.payload?.fullLabel ?? ""}
+                  />
+                  <Bar dataKey="count" name="Validations" fill={primaryColor} radius={[4, 4, 0, 0]} maxBarSize={56} />
+                </BarChart>
+              </ResponsiveContainer>
             </div>
-          ))}
-        </div>
+            <p className="text-xs text-gray-400 mt-2">Validation entries per sprint (last 6 sprints)</p>
+          </>
+        )}
       </div>
     </div>
   );
