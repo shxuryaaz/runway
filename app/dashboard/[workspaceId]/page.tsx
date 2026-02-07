@@ -47,6 +47,8 @@ export default function WorkspaceOverviewPage() {
   const [showAddTaskForm, setShowAddTaskForm] = useState(false);
   const [expandedMilestoneIds, setExpandedMilestoneIds] = useState<Set<string>>(new Set());
   const [validationLinkCopiedId, setValidationLinkCopiedId] = useState<string | null>(null);
+  type ChartMetricType = "sprint_completion" | "tasks_done" | "validations";
+  const [chartMetric, setChartMetric] = useState<ChartMetricType>("sprint_completion");
 
   const handleMilestoneStatusChange = async (milestoneId: string, status: MilestoneStatus) => {
     if (!canWrite) return;
@@ -189,8 +191,56 @@ export default function WorkspaceOverviewPage() {
   };
   const completionPct = taskStats.total ? Math.round((taskStats.done / taskStats.total) * 100) : 0;
   const completedSprints = sprints.filter((s) => s.completed && s.completionStats);
-  const chartData = completedSprints.slice(-6).map((s) => s.completionStats!.completionPercentage ?? 0);
-  while (chartData.length < 6) chartData.unshift(0);
+  // Sprint completion % (past 6 completed sprints)
+  const sprintCompletionData = completedSprints.slice(-6).map((s) => s.completionStats!.completionPercentage ?? 0);
+  const sprintCompletionPadded = [...sprintCompletionData];
+  while (sprintCompletionPadded.length < 6) sprintCompletionPadded.unshift(0);
+  // Tasks done per sprint (last 6 sprints by date)
+  const last6Sprints = [...sprints].sort(
+    (a, b) => new Date(b.weekStartDate).getTime() - new Date(a.weekStartDate).getTime()
+  ).slice(0, 6).reverse();
+  const tasksDonePerSprint = last6Sprints.map((s) =>
+    tasks.filter((t) => t.sprintId === s.id && t.status === "done").length
+  );
+  const maxTasks = Math.max(1, ...tasksDonePerSprint);
+  const tasksDoneNormalized = tasksDonePerSprint.map((c) => Math.round((c / maxTasks) * 100));
+  while (tasksDoneNormalized.length < 6) tasksDoneNormalized.unshift(0);
+  const tasksDoneRawPadded = [...Array(Math.max(0, 6 - tasksDonePerSprint.length)).fill(0), ...tasksDonePerSprint];
+  // Validations per week (last 6 weeks)
+  const msPerWeek = 7 * 24 * 60 * 60 * 1000;
+  const now = Date.now();
+  const last6Weeks = Array.from({ length: 6 }, (_, i) => {
+    const weekStart = new Date(now);
+    weekStart.setDate(weekStart.getDate() - (6 - i) * 7);
+    weekStart.setHours(0, 0, 0, 0);
+    return weekStart.getTime();
+  });
+  const validationsPerWeek = last6Weeks.map((weekStart) =>
+    validations.filter((v) => v.createdAt >= weekStart && v.createdAt < weekStart + msPerWeek).length
+  );
+  const maxValidations = Math.max(1, ...validationsPerWeek);
+  const validationsNormalized = validationsPerWeek.map((c) => Math.round((c / maxValidations) * 100));
+  const chartDataByMetric: Record<ChartMetricType, { values: number[]; label: string; subtitle: string; raw?: number[] }> = {
+    sprint_completion: {
+      values: sprintCompletionPadded,
+      label: "Completion %",
+      subtitle: "Past 6 sprints",
+    },
+    tasks_done: {
+      values: tasksDoneNormalized,
+      label: "Tasks done",
+      subtitle: "Last 6 sprints (count)",
+      raw: tasksDoneRawPadded,
+    },
+    validations: {
+      values: validationsNormalized,
+      label: "Validations",
+      subtitle: "Last 6 weeks (count)",
+      raw: validationsPerWeek,
+    },
+  };
+  const chartMetricConfig = chartDataByMetric[chartMetric];
+  const chartData = chartMetricConfig.values;
   const hasChartData = chartData.some((p) => p > 0);
 
   const completedMilestonesCount = milestones.filter((m) => m.status === "completed").length;
@@ -207,7 +257,19 @@ export default function WorkspaceOverviewPage() {
     const daysRemaining = Math.ceil((end - now) / 86400000);
     return { pct, daysRemaining };
   }
-  const sprintProgress = currentSprint ? getSprintProgress(currentSprint) : null;
+  const sprintTimeProgress = currentSprint ? getSprintProgress(currentSprint) : null;
+  // Work done: tasks in current sprint that are done / total tasks in sprint
+  const currentSprintTasks = currentSprint
+    ? tasks.filter((t) => t.sprintId === currentSprint.id)
+    : [];
+  const sprintWorkDone =
+    currentSprintTasks.length > 0
+      ? Math.round(
+          (currentSprintTasks.filter((t) => t.status === "done").length / currentSprintTasks.length) * 100
+        )
+      : 0;
+  const sprintWorkDoneCount = currentSprintTasks.filter((t) => t.status === "done").length;
+  const sprintWorkTotal = currentSprintTasks.length;
 
   function toggleMilestoneExpanded(id: string) {
     setExpandedMilestoneIds((prev) => {
@@ -319,43 +381,52 @@ export default function WorkspaceOverviewPage() {
       {/* Chart + Quick actions row */}
       <div className="grid lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 bg-white dark:bg-[#1a2530] rounded-2xl border border-[#e8eaed] dark:border-white/5 p-6 shadow-sm">
-          <h2 className="text-lg font-bold text-[#111418] dark:text-white mb-1">Execution over time</h2>
-          <span className="text-xs text-[#5f6368] dark:text-gray-400">Past 6 sprints</span>
-          {hasChartData ? (
-            <>
-              <div className="flex items-end gap-2 h-36 mt-4">
-                {chartData.map((pct, i) => (
-                  <div key={i} className="flex-1 flex flex-col items-center gap-1">
-                    <div
-                      className="w-full rounded-t-md min-h-[8px] transition-all bg-primary/80"
-                      style={{ height: `${Math.max(8, (pct / 100) * 120)}px` }}
-                    />
-                    <span className="text-[10px] font-medium text-[#9aa0a6] dark:text-gray-500">S{i + 1}</span>
-                  </div>
-                ))}
+          <div className="flex flex-wrap items-center justify-between gap-2 mb-1">
+            <h2 className="text-lg font-bold text-[#111418] dark:text-white">Execution over time</h2>
+            <select
+              value={chartMetric}
+              onChange={(e) => setChartMetric(e.target.value as ChartMetricType)}
+              className="rounded-lg border border-[#e8eaed] dark:border-white/10 bg-white dark:bg-[#1a2530] px-3 py-1.5 text-xs font-medium text-[#111418] dark:text-white"
+            >
+              <option value="sprint_completion">Sprint completion %</option>
+              <option value="tasks_done">Tasks completed</option>
+              <option value="validations">Validations</option>
+            </select>
+          </div>
+          <span className="text-xs text-[#5f6368] dark:text-gray-400">{chartMetricConfig.subtitle}</span>
+          <div className="flex items-end gap-2 h-36 mt-4">
+            {chartData.map((pct, i) => (
+              <div key={i} className="flex-1 flex flex-col items-center gap-1">
+                <div
+                  className="w-full rounded-t-md min-h-[6px] transition-all bg-primary/80"
+                  style={{
+                    height: `${Math.max(6, (pct / 100) * 120)}px`,
+                    opacity: pct > 0 ? 1 : 0.35,
+                  }}
+                />
+                <span className="text-[10px] font-medium text-[#9aa0a6] dark:text-gray-500">
+                  {chartMetric === "tasks_done" || chartMetric === "validations"
+                    ? chartMetricConfig.raw?.[i] ?? "—"
+                    : `S${i + 1}`}
+                </span>
               </div>
-              <div className="flex gap-4 mt-3">
-                <div className="flex items-center gap-1.5">
-                  <div className="w-2.5 h-2.5 rounded-full bg-primary" />
-                  <span className="text-xs text-[#5f6368] dark:text-gray-400">Completion %</span>
-                </div>
-              </div>
-            </>
-          ) : (
-            <div className="mt-6 py-8 px-4 rounded-xl bg-gray-50 dark:bg-white/5 border border-dashed border-gray-200 dark:border-white/10 text-center">
-              <p className="text-[#111418] dark:text-white font-medium">No tasks tracked yet</p>
-              <p className="text-sm text-[#5f6368] dark:text-gray-400 mt-1 max-w-sm mx-auto">
-                Create a sprint, add tasks, and complete them to see your execution trend here.
-              </p>
+            ))}
+          </div>
+          <div className="flex flex-wrap items-center justify-between gap-3 mt-3">
+            <div className="flex items-center gap-1.5">
+              <div className="w-2.5 h-2.5 rounded-full bg-primary" />
+              <span className="text-xs text-[#5f6368] dark:text-gray-400">{chartMetricConfig.label}</span>
+            </div>
+            {!hasChartData && chartMetric === "sprint_completion" && (
               <Link
                 href={`/dashboard/${workspaceId}/sprints`}
-                className="inline-flex items-center gap-2 mt-4 rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold hover:bg-primary/90"
+                className="text-xs font-semibold text-primary hover:underline inline-flex items-center gap-1"
               >
-                <span className="material-symbols-outlined text-lg">update</span>
-                Go to Sprints
+                Create a sprint and complete tasks to see your trend
+                <span className="material-symbols-outlined text-sm">arrow_forward</span>
               </Link>
-            </div>
-          )}
+            )}
+          </div>
         </div>
 
         <div className="flex flex-col gap-3">
@@ -462,20 +533,29 @@ export default function WorkspaceOverviewPage() {
               </span>
             )}
           </p>
-          {sprintProgress !== null && (
-            <div className="mb-4">
+          <div className="mb-4 space-y-3">
+            <div>
               <div className="flex justify-between text-xs text-[#5f6368] dark:text-gray-400 mb-1">
-                <span>Sprint timeline</span>
-                <span>{sprintProgress.daysRemaining} days remaining</span>
+                <span>Work done</span>
+                <span>
+                  {sprintWorkTotal > 0
+                    ? `${sprintWorkDoneCount}/${sprintWorkTotal} tasks · ${sprintWorkDone}%`
+                    : "No tasks in sprint"}
+                </span>
               </div>
               <div className="h-2 w-full rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden">
                 <div
                   className="h-full rounded-full bg-primary transition-all"
-                  style={{ width: `${sprintProgress.pct}%` }}
+                  style={{ width: `${sprintWorkDone}%` }}
                 />
               </div>
             </div>
-          )}
+            {sprintTimeProgress !== null && (
+              <p className="text-xs text-[#5f6368] dark:text-gray-400">
+                {sprintTimeProgress.daysRemaining} days remaining in sprint
+              </p>
+            )}
+          </div>
           {currentSprint.goals.length > 0 && (
             <ul className="list-disc list-inside text-sm text-gray-600 dark:text-gray-400 mb-4">
               {currentSprint.goals.slice(0, 5).map((g) => (
