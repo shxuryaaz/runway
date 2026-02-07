@@ -149,7 +149,7 @@ export default function LandingPage() {
                     <div className="size-10 rounded-xl bg-primary/10 flex items-center justify-center">
                       <span className="material-symbols-outlined text-primary text-xl">flag</span>
                     </div>
-                    <p className="text-xs font-medium text-[#5f6368] dark:text-gray-400">Total tasks</p>
+                    <p className="text-xs font-medium text-[#5f6368] dark:text-gray-400">Milestones</p>
                   </div>
                   <p className="text-2xl font-extrabold text-primary">3</p>
                   <p className="text-xs text-[#5f6368] dark:text-gray-500">Startup workspaces</p>
@@ -202,7 +202,7 @@ export default function LandingPage() {
                   </div>
                   <div className="bg-white dark:bg-[#1a2530] p-3 rounded-xl border border-[#e8eaed] dark:border-white/5 shadow-sm flex flex-col items-center justify-center gap-1 text-center">
                     <span className="material-symbols-outlined text-primary text-2xl">flag</span>
-                    <span className="text-[10px] font-semibold text-[#111418] dark:text-white">Add task</span>
+                    <span className="text-[10px] font-semibold text-[#111418] dark:text-white">Add milestone</span>
                   </div>
                   <div className="bg-white dark:bg-[#1a2530] p-3 rounded-xl border border-[#e8eaed] dark:border-white/5 shadow-sm flex flex-col items-center justify-center gap-1 text-center">
                     <span className="material-symbols-outlined text-primary text-2xl">add_task</span>
@@ -276,7 +276,7 @@ export default function LandingPage() {
                       </div>
                       <div>
                         <p className="font-bold text-[#111418] dark:text-white">Alpha launch prep</p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-semibold">MVP</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-semibold">MVP Milestone</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-4">
@@ -335,7 +335,7 @@ export default function LandingPage() {
                   Plan, track and move your startup forward
                 </h2>
                 <p className="text-lg text-[#617589] dark:text-gray-400 leading-relaxed max-w-[540px]">
-                  Stay organized and move faster with structured workspaces designed for high-growth startups. Manage your entire execution pipeline with AI-powered insights and verifiable execution records.
+                  Stay organized and move faster with structured workspaces designed for high-growth startups. Manage your entire execution pipeline with AI-powered insights and verifiable blockchain milestones.
                 </p>
               </div>
               <div className="flex flex-col gap-10">
@@ -386,7 +386,7 @@ export default function LandingPage() {
               Built for early stage founders
             </h2>
             <p className="mt-4 text-[#617589] dark:text-slate-400 text-lg max-w-2xl mx-auto">
-              The execution layer for your startup. From seed to scale, manage execution with AI-enhanced precision and blockchain-grade security.
+              The execution layer for your startup. From seed to scale, manage every milestone with AI-enhanced precision and blockchain-grade security.
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6">
@@ -395,7 +395,7 @@ export default function LandingPage() {
                 <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-6">
                   <span className="material-symbols-outlined text-primary">timeline</span>
                 </div>
-                <h3 className="text-[#111418] dark:text-white text-2xl font-bold mb-3">Execution &amp; task tracking</h3>
+                <h3 className="text-[#111418] dark:text-white text-2xl font-bold mb-3">Execution &amp; milestone tracking</h3>
                 <p className="text-[#617589] dark:text-slate-400">Track every detail from MVP to scale with automated status reporting and AI forecasting.</p>
               </div>
               <div className="relative w-full aspect-[4/3] rounded-lg overflow-hidden border border-[#f0f2f4] dark:border-slate-700 bg-gray-50 dark:bg-slate-950 p-4 shadow-inner">
@@ -462,7 +462,7 @@ export default function LandingPage() {
               </div>
               <h4 className="text-[#111418] dark:text-white text-lg font-bold mb-2">Progress</h4>
               <p className="text-[#617589] dark:text-slate-400 text-sm leading-relaxed">
-                Monitor progress in real-time. Transparent metrics for investors and internal stakeholders.
+                Monitor global milestones in real-time. Transparent metrics for investors and internal stakeholders.
               </p>
             </div>
             <div className="lg:col-span-2 bg-white dark:bg-slate-900 rounded-xl border border-[#dbe0e6] dark:border-slate-800 p-6 group hover:-translate-y-1 transition-all duration-300">
@@ -499,7 +499,7 @@ export default function LandingPage() {
                   Understand what&apos;s working and what isn&apos;t
                 </h2>
                 <p className="text-[#617589] dark:text-gray-400 text-lg font-normal leading-relaxed lg:max-w-[520px]">
-                  Get clear indicators of your startup&apos;s health and spot risks before they scale with our AI-driven insights layer. Track execution with blockchain-verified precision.
+                  Get clear indicators of your startup&apos;s health and spot risks before they scale with our AI-driven insights layer. Monitor every milestone with blockchain-verified precision.
                 </p>
               </div>
               <Link
@@ -519,7 +519,7 @@ export default function LandingPage() {
                 </div>
                 <div className="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white dark:bg-[#1c2a38] px-5 border border-[#dbe0e6] dark:border-gray-700 shadow-sm hover:border-primary cursor-default">
                   <span className="material-symbols-outlined text-primary text-[20px]">insights</span>
-                  <p className="text-[#111418] dark:text-gray-200 text-sm font-semibold">Tasks</p>
+                  <p className="text-[#111418] dark:text-gray-200 text-sm font-semibold">Milestones</p>
                 </div>
                 <div className="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white dark:bg-[#1c2a38] px-5 border border-[#dbe0e6] dark:border-gray-700 shadow-sm hover:border-primary cursor-default">
                   <span className="material-symbols-outlined text-primary text-[20px]">hub</span>
@@ -544,7 +544,7 @@ export default function LandingPage() {
                       <p className="text-[#111418] dark:text-white text-xl font-extrabold">84%</p>
                     </div>
                     <div className="flex flex-col gap-1">
-                      <p className="text-[#617589] dark:text-gray-400 text-[11px] font-bold uppercase tracking-wider">Tasks</p>
+                      <p className="text-[#617589] dark:text-gray-400 text-[11px] font-bold uppercase tracking-wider">Milestones</p>
                       <p className="text-[#111418] dark:text-white text-xl font-extrabold">12/15</p>
                     </div>
                     <div className="flex flex-col gap-1">
@@ -633,7 +633,7 @@ export default function LandingPage() {
               </div>
               <h3 className="mb-3 text-xl font-bold text-[#111418] dark:text-white">AI-assisted execution insights</h3>
               <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-                Identify stalled tasks, repeated blockers, and execution risks based on task and sprint data. Our models predict delays before they happen.
+                Identify stalled milestones, repeated blockers, and execution risks based on task and sprint data. Our models predict delays before they happen.
               </p>
               <div className="mt-8 flex items-center gap-2 text-sm font-bold text-primary opacity-0 group-hover:opacity-100 transition-opacity">
                 Learn more <span className="material-symbols-outlined text-[18px]">arrow_forward</span>

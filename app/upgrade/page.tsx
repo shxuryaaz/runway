@@ -32,7 +32,7 @@ export default function UpgradePage() {
             </p>
             <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400 mb-6">
               <li>1 workspace</li>
-              <li>Unlimited tasks</li>
+              <li>Unlimited tasks & milestones</li>
               <li>Basic analytics</li>
               <li>Investor pitch outline</li>
             </ul>

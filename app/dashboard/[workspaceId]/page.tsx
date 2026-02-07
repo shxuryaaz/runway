@@ -7,40 +7,74 @@ import { useAuth } from "@/contexts/AuthContext";
 import { getRoleInWorkspace } from "@/contexts/AuthContext";
 import {
   getWorkspace,
+  getMilestones,
   getTasksForWorkspace,
   getSprints,
   getValidationsForWorkspace,
+  createMilestone,
+  createTask,
   createValidationEntry,
+  updateMilestone,
 } from "@/lib/firestore";
-import { seedDummyData } from "@/lib/seed-dummy";
-import type { StartupWorkspace, Task, Sprint, ValidationEntry } from "@/lib/types";
+import { getExecutionInsights, getValidationInsights } from "@/lib/ai-mock";
+import type {
+  StartupWorkspace,
+  Milestone,
+  MilestoneStatus,
+  Task,
+  Sprint,
+  ValidationEntry,
+} from "@/lib/types";
 
 export default function WorkspaceOverviewPage() {
   const params = useParams();
   const workspaceId = params.workspaceId as string;
   const { user } = useAuth();
   const [workspace, setWorkspace] = useState<StartupWorkspace | null>(null);
+  const [milestones, setMilestones] = useState<Milestone[]>([]);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [sprints, setSprints] = useState<Sprint[]>([]);
   const [validations, setValidations] = useState<ValidationEntry[]>([]);
   const [loading, setLoading] = useState(true);
+  const [newMilestoneTitle, setNewMilestoneTitle] = useState("");
+  const [newMilestoneDesc, setNewMilestoneDesc] = useState("");
+  const [newTaskTitle, setNewTaskTitle] = useState("");
+  const [newTaskMilestoneId, setNewTaskMilestoneId] = useState("");
+  const [addingMilestone, setAddingMilestone] = useState(false);
+  const [addingTask, setAddingTask] = useState(false);
   const [validationSprintId, setValidationSprintId] = useState("");
+  const [validationMilestoneId, setValidationMilestoneId] = useState("");
   const [validationType, setValidationType] = useState<ValidationEntry["type"]>("interview");
   const [validationSummary, setValidationSummary] = useState("");
   const [validationNotes, setValidationNotes] = useState("");
   const [addingValidation, setAddingValidation] = useState(false);
-  const [seeding, setSeeding] = useState(false);
+  const [updatingMilestoneId, setUpdatingMilestoneId] = useState<string | null>(null);
+
+  const handleMilestoneStatusChange = async (milestoneId: string, status: MilestoneStatus) => {
+    if (!canWrite) return;
+    setUpdatingMilestoneId(milestoneId);
+    try {
+      await updateMilestone(milestoneId, { status });
+      setMilestones((prev) =>
+        prev.map((m) => (m.id === milestoneId ? { ...m, status } : m))
+      );
+    } finally {
+      setUpdatingMilestoneId(null);
+    }
+  };
 
   useEffect(() => {
     if (!workspaceId) return;
     Promise.all([
       getWorkspace(workspaceId),
+      getMilestones(workspaceId),
       getTasksForWorkspace(workspaceId),
       getSprints(workspaceId),
       getValidationsForWorkspace(workspaceId),
     ])
-      .then(([ws, t, sp, v]) => {
+      .then(([ws, ms, t, sp, v]) => {
         setWorkspace(ws ?? null);
+        setMilestones(ms);
         setTasks(t);
         setSprints(sp);
         setValidations(v);
@@ -51,49 +85,85 @@ export default function WorkspaceOverviewPage() {
   const role = workspace ? getRoleInWorkspace(user?.uid ?? undefined, workspace.members) : null;
   const isFounder = role === "founder";
   const canWrite = role === "founder" || role === "team_member";
-  const displayName = user?.displayName?.trim();
-  const firstName =
-    (displayName && displayName.split(/\s+/)[0]) ||
-    (user?.email && user.email.split("@")[0]) ||
-    "Founder";
 
   const currentSprint = sprints.find((s) => !s.completed && s.locked) ?? sprints.find((s) => !s.completed);
+  const executionInsights = getExecutionInsights(milestones, tasks, sprints);
+  const validationInsights = getValidationInsights(milestones, validations, sprints);
 
-  const refetch = () => {
-    if (!workspaceId) return;
-    Promise.all([
-      getWorkspace(workspaceId),
-      getTasksForWorkspace(workspaceId),
-      getSprints(workspaceId),
-      getValidationsForWorkspace(workspaceId),
-    ]).then(([ws, t, sp, v]) => {
-      setWorkspace(ws ?? null);
-      setTasks(t);
-      setSprints(sp);
-      setValidations(v);
-    });
+  const handleAddMilestone = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!workspaceId || !newMilestoneTitle.trim() || !canWrite) return;
+    setAddingMilestone(true);
+    try {
+      const id = await createMilestone(
+        workspaceId,
+        newMilestoneTitle.trim(),
+        newMilestoneDesc.trim(),
+        milestones.length
+      );
+      setMilestones((m) => [
+        ...m,
+        {
+          id,
+          workspaceId,
+          title: newMilestoneTitle.trim(),
+          description: newMilestoneDesc.trim(),
+          status: "planned",
+          progressPercentage: 0,
+          taskIds: [],
+          order: milestones.length,
+          createdAt: Date.now(),
+        },
+      ]);
+      setNewMilestoneTitle("");
+      setNewMilestoneDesc("");
+    } finally {
+      setAddingMilestone(false);
+    }
   };
 
-  const handleSeedDummy = async () => {
-    if (!workspaceId || !user?.uid || seeding) return;
-    setSeeding(true);
+  const handleAddTask = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!workspaceId || !newTaskTitle.trim() || !newTaskMilestoneId || !canWrite) return;
+    setAddingTask(true);
     try {
-      await seedDummyData(workspaceId, user.uid);
-      refetch();
+      const id = await createTask(
+        workspaceId,
+        newTaskMilestoneId,
+        null,
+        newTaskTitle.trim(),
+        user?.uid ?? null
+      );
+      setTasks((t) => [
+        ...t,
+        {
+          id,
+          workspaceId,
+          milestoneId: newTaskMilestoneId,
+          sprintId: null,
+          title: newTaskTitle.trim(),
+          ownerId: user?.uid ?? null,
+          status: "todo",
+          createdAt: Date.now(),
+          updatedAt: Date.now(),
+        },
+      ]);
+      setNewTaskTitle("");
+      setNewTaskMilestoneId("");
     } finally {
-      setSeeding(false);
+      setAddingTask(false);
     }
   };
 
   const handleAddValidation = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!workspaceId || !validationSprintId || !validationSummary.trim() || !user || !canWrite) return;
+    if (!workspaceId || !validationSprintId || !validationMilestoneId || !validationSummary.trim() || !user || !canWrite) return;
     setAddingValidation(true);
     try {
       const id = await createValidationEntry(
         workspaceId,
         validationSprintId,
-        null,
+        validationMilestoneId,
         validationType,
         validationSummary.trim(),
         validationNotes.trim(),
@@ -104,7 +174,7 @@ export default function WorkspaceOverviewPage() {
           id,
           workspaceId,
           sprintId: validationSprintId,
-          milestoneId: null,
+          milestoneId: validationMilestoneId,
           type: validationType,
           summary: validationSummary.trim(),
           qualitativeNotes: validationNotes.trim(),
@@ -114,6 +184,7 @@ export default function WorkspaceOverviewPage() {
         ...v,
       ]);
       setValidationSprintId("");
+      setValidationMilestoneId("");
       setValidationSummary("");
       setValidationNotes("");
     } finally {
@@ -142,20 +213,32 @@ export default function WorkspaceOverviewPage() {
 
   return (
     <div className="space-y-8">
-      {/* Top header bar */}
-      <div className="flex items-start justify-between gap-4">
+      {/* Top header bar - Dreelio style */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-[#111418] dark:text-white">Welcome back, {firstName}</h1>
+          <h1 className="text-2xl font-bold text-[#111418] dark:text-white">Welcome back, Founder</h1>
           <p className="text-[#5f6368] dark:text-gray-400 text-sm mt-0.5">Your startup workspace</p>
         </div>
-        <button
-          type="button"
-          onClick={handleSeedDummy}
-          disabled={seeding || !user?.uid}
-          className="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-1.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50"
-        >
-          {seeding ? "Seeding…" : "Seed dummy data"}
-        </button>
+        <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex-1 min-w-[200px] max-w-md rounded-xl border border-[#dadce0] dark:border-white/10 bg-white dark:bg-[#1a2530] px-4 py-2.5 flex items-center gap-2 text-[#5f6368] dark:text-gray-400 text-sm">
+            <span className="material-symbols-outlined text-[20px]">search</span>
+            <span>Search</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <button type="button" className="p-2 rounded-lg hover:bg-white dark:hover:bg-white/10 text-[#5f6368] dark:text-gray-400" title="Insights">
+              <span className="material-symbols-outlined text-[22px]">insights</span>
+            </button>
+            <Link href={`/dashboard/${workspaceId}/analytics`} className="p-2 rounded-lg hover:bg-white dark:hover:bg-white/10 text-[#5f6368] dark:text-gray-400" title="Analytics">
+              <span className="material-symbols-outlined text-[22px]">analytics</span>
+            </Link>
+            <Link href={`/dashboard/${workspaceId}/ledger`} className="p-2 rounded-lg hover:bg-white dark:hover:bg-white/10 text-[#5f6368] dark:text-gray-400" title="Ledger">
+              <span className="material-symbols-outlined text-[22px]">account_tree</span>
+            </Link>
+          </div>
+          <div className="size-10 rounded-full bg-[#e8eaed] dark:bg-white/20 flex items-center justify-center overflow-hidden">
+            <span className="material-symbols-outlined text-[24px] text-[#5f6368] dark:text-gray-400">person</span>
+          </div>
+        </div>
       </div>
 
       {/* Four metric cards - reference style with icons */}
@@ -175,10 +258,12 @@ export default function WorkspaceOverviewPage() {
             <div className="p-2 rounded-xl bg-primary/10">
               <span className="material-symbols-outlined text-primary text-[24px]">timeline</span>
             </div>
-            <p className="text-xs font-medium text-[#5f6368] dark:text-gray-400">Total tasks</p>
+            <p className="text-xs font-medium text-[#5f6368] dark:text-gray-400">Milestones</p>
           </div>
-          <p className="text-3xl font-extrabold text-[#111418] dark:text-white mt-3">{taskStats.total}</p>
-          <p className="text-xs text-[#5f6368] dark:text-gray-400 mt-0.5">{taskStats.done} done</p>
+          <p className="text-3xl font-extrabold text-[#111418] dark:text-white mt-3">
+            {milestones.filter((m) => m.status === "completed").length}/{milestones.length}
+          </p>
+          <p className="text-xs text-[#5f6368] dark:text-gray-400 mt-0.5">completed</p>
         </div>
         <div className="bg-white dark:bg-[#1a2530] rounded-2xl border border-[#e8eaed] dark:border-white/5 p-5 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-start justify-between">
@@ -248,7 +333,23 @@ export default function WorkspaceOverviewPage() {
               <span className="material-symbols-outlined text-primary text-[28px]">reviews</span>
               <span className="text-xs font-semibold text-[#111418] dark:text-white">Log validation</span>
             </button>
-            </div>
+            <button
+              type="button"
+              onClick={() => document.getElementById("add-milestone")?.scrollIntoView({ behavior: "smooth" })}
+              className="flex flex-col items-center justify-center gap-2 p-4 rounded-xl border border-[#e8eaed] dark:border-white/5 bg-white dark:bg-[#1a2530] shadow-sm hover:shadow-md hover:border-primary/30 transition-all text-center"
+            >
+              <span className="material-symbols-outlined text-primary text-[28px]">timeline</span>
+              <span className="text-xs font-semibold text-[#111418] dark:text-white">Add milestone</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => document.getElementById("add-task")?.scrollIntoView({ behavior: "smooth" })}
+              className="flex flex-col items-center justify-center gap-2 p-4 rounded-xl border border-[#e8eaed] dark:border-white/5 bg-white dark:bg-[#1a2530] shadow-sm hover:shadow-md hover:border-primary/30 transition-all text-center"
+            >
+              <span className="material-symbols-outlined text-primary text-[28px]">add_task</span>
+              <span className="text-xs font-semibold text-[#111418] dark:text-white">Add task</span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -264,9 +365,11 @@ export default function WorkspaceOverviewPage() {
               </span>
             )}
           </p>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-            {currentSprint.taskIds.length} item{currentSprint.taskIds.length !== 1 ? "s" : ""} in this sprint.
-          </p>
+          <ul className="list-disc list-inside text-sm text-gray-600 dark:text-gray-400 mb-4">
+            {currentSprint.goals.slice(0, 5).map((g) => (
+              <li key={g.id}>{g.text}</li>
+            ))}
+          </ul>
           <Link
             href={`/dashboard/${workspaceId}/sprints`}
             className="text-primary text-sm font-semibold hover:underline"
@@ -276,22 +379,142 @@ export default function WorkspaceOverviewPage() {
         </div>
       )}
 
-      {/* Add validation (team/founder) */}
-      {canWrite && sprints.length > 0 && (
-        <form id="log-validation" onSubmit={handleAddValidation} className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-6 space-y-4">
-          <h3 className="font-bold text-lg">Log validation</h3>
-          <div>
-            <label className="block text-sm font-medium mb-1">Sprint</label>
+      {/* Add milestone (founder/team) */}
+      {canWrite && (
+        <form id="add-milestone" onSubmit={handleAddMilestone} className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-6 flex flex-wrap gap-4 items-end">
+          <div className="flex-1 min-w-[200px]">
+            <label className="block text-sm font-medium mb-1">New milestone</label>
+            <input
+              type="text"
+              value={newMilestoneTitle}
+              onChange={(e) => setNewMilestoneTitle(e.target.value)}
+              placeholder="Milestone title"
+              className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 py-2"
+            />
+          </div>
+          <div className="flex-1 min-w-[200px]">
+            <input
+              type="text"
+              value={newMilestoneDesc}
+              onChange={(e) => setNewMilestoneDesc(e.target.value)}
+              placeholder="Description (optional)"
+              className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 py-2"
+            />
+          </div>
+          <button type="submit" disabled={addingMilestone} className="rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold disabled:opacity-50">
+            {addingMilestone ? "Adding…" : "Add milestone"}
+          </button>
+        </form>
+      )}
+
+      {/* Add task */}
+      {canWrite && milestones.length > 0 && (
+        <form id="add-task" onSubmit={handleAddTask} className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-6 flex flex-wrap gap-4 items-end">
+          <div className="flex-1 min-w-[200px]">
+            <label className="block text-sm font-medium mb-1">New task</label>
+            <input
+              type="text"
+              value={newTaskTitle}
+              onChange={(e) => setNewTaskTitle(e.target.value)}
+              placeholder="Task title"
+              className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 py-2"
+            />
+          </div>
+          <div className="w-48">
             <select
-              value={validationSprintId}
-              onChange={(e) => setValidationSprintId(e.target.value)}
+              value={newTaskMilestoneId}
+              onChange={(e) => setNewTaskMilestoneId(e.target.value)}
               className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 py-2"
             >
-              <option value="">Select sprint</option>
-              {sprints.map((s) => (
-                <option key={s.id} value={s.id}>{s.weekStartDate} → {s.weekEndDate}</option>
+              <option value="">Milestone</option>
+              {milestones.map((m) => (
+                <option key={m.id} value={m.id}>{m.title}</option>
               ))}
             </select>
+          </div>
+          <button type="submit" disabled={addingTask || !newTaskMilestoneId} className="rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold disabled:opacity-50">
+            {addingTask ? "Adding…" : "Add task"}
+          </button>
+        </form>
+      )}
+
+      {/* Milestones */}
+      <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-6">
+        <h3 className="font-bold text-lg mb-4">Milestones</h3>
+        <div className="space-y-3">
+          {milestones.length === 0 ? (
+            <p className="text-gray-500 text-sm">No milestones yet. Add one above.</p>
+          ) : (
+            milestones.map((m) => (
+              <div
+                key={m.id}
+                className="flex items-center justify-between gap-4 p-3 rounded-xl border border-gray-100 dark:border-gray-700"
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  <div
+                    className={`w-2 h-2 shrink-0 rounded-full ${
+                      m.status === "completed"
+                        ? "bg-green-500"
+                        : m.status === "active"
+                        ? "bg-primary"
+                        : "bg-gray-400"
+                    }`}
+                  />
+                  <span className="font-medium text-[#111418] dark:text-white truncate">{m.title}</span>
+                </div>
+                {canWrite ? (
+                  <select
+                    value={m.status}
+                    onChange={(e) => handleMilestoneStatusChange(m.id, e.target.value as MilestoneStatus)}
+                    disabled={updatingMilestoneId === m.id}
+                    className="shrink-0 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-900 px-3 py-1.5 text-sm font-medium text-[#111418] dark:text-white disabled:opacity-50"
+                  >
+                    <option value="planned">Planned</option>
+                    <option value="active">Active</option>
+                    <option value="completed">Done</option>
+                  </select>
+                ) : (
+                  <span className="text-xs font-bold px-2 py-1 rounded bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 uppercase shrink-0">
+                    {m.status}
+                  </span>
+                )}
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+
+      {/* Add validation (team/founder) */}
+      {canWrite && sprints.length > 0 && milestones.length > 0 && (
+        <form id="log-validation" onSubmit={handleAddValidation} className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-6 space-y-4">
+          <h3 className="font-bold text-lg">Log validation</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium mb-1">Sprint</label>
+              <select
+                value={validationSprintId}
+                onChange={(e) => setValidationSprintId(e.target.value)}
+                className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 py-2"
+              >
+                <option value="">Select sprint</option>
+                {sprints.map((s) => (
+                  <option key={s.id} value={s.id}>{s.weekStartDate} → {s.weekEndDate}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Milestone</label>
+              <select
+                value={validationMilestoneId}
+                onChange={(e) => setValidationMilestoneId(e.target.value)}
+                className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 py-2"
+              >
+                <option value="">Select milestone</option>
+                {milestones.map((m) => (
+                  <option key={m.id} value={m.id}>{m.title}</option>
+                ))}
+              </select>
+            </div>
           </div>
           <div>
             <label className="block text-sm font-medium mb-1">Type</label>
@@ -347,6 +570,71 @@ export default function WorkspaceOverviewPage() {
         </div>
       )}
 
+      {/* AI insights */}
+      {(executionInsights.length > 0 || validationInsights.length > 0) && (
+        <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-6">
+          <h3 className="font-bold text-lg mb-4">Insights</h3>
+          <div className="space-y-3">
+            {executionInsights.slice(0, 3).map((i) => (
+              <div
+                key={i.id}
+                className="flex gap-3 p-3 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-800"
+              >
+                <span className="material-symbols-outlined text-amber-600">insights</span>
+                <div>
+                  <p className="font-semibold text-sm text-[#111418] dark:text-white">{i.title}</p>
+                  <p className="text-xs text-gray-600 dark:text-gray-400">{i.description}</p>
+                </div>
+              </div>
+            ))}
+            {validationInsights.slice(0, 2).map((i) => (
+              <div
+                key={i.id}
+                className="flex gap-3 p-3 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800"
+              >
+                <span className="material-symbols-outlined text-primary">biotech</span>
+                <div>
+                  <p className="font-semibold text-sm text-[#111418] dark:text-white">{i.title}</p>
+                  <p className="text-xs text-gray-600 dark:text-gray-400">{i.description}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div className="flex flex-wrap gap-4">
+        <Link
+          href={`/dashboard/${workspaceId}/sprints`}
+          className="inline-flex items-center gap-2 rounded-lg h-10 px-4 bg-primary/10 text-primary text-sm font-bold hover:bg-primary/20"
+        >
+          <span className="material-symbols-outlined text-lg">update</span>
+          Sprints
+        </Link>
+        <Link
+          href={`/dashboard/${workspaceId}/analytics`}
+          className="inline-flex items-center gap-2 rounded-lg h-10 px-4 bg-gray-100 dark:bg-gray-800 text-[#111418] dark:text-white text-sm font-bold hover:bg-gray-200 dark:hover:bg-gray-700"
+        >
+          <span className="material-symbols-outlined text-lg">analytics</span>
+          Analytics
+        </Link>
+        {isFounder && (
+          <Link
+            href={`/dashboard/${workspaceId}/investor`}
+            className="inline-flex items-center gap-2 rounded-lg h-10 px-4 bg-gray-100 dark:bg-gray-800 text-[#111418] dark:text-white text-sm font-bold hover:bg-gray-200 dark:hover:bg-gray-700"
+          >
+            <span className="material-symbols-outlined text-lg">summarize</span>
+            Investor view
+          </Link>
+        )}
+        <Link
+          href={`/dashboard/${workspaceId}/ledger`}
+          className="inline-flex items-center gap-2 rounded-lg h-10 px-4 bg-gray-100 dark:bg-gray-800 text-[#111418] dark:text-white text-sm font-bold hover:bg-gray-200 dark:hover:bg-gray-700"
+        >
+          <span className="material-symbols-outlined text-lg">account_tree</span>
+          Ledger
+        </Link>
+      </div>
     </div>
   );
 }

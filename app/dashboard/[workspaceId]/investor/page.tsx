@@ -7,6 +7,7 @@ import { getRoleInWorkspace } from "@/contexts/AuthContext";
 import {
   getWorkspace,
   getSprints,
+  getMilestones,
   getTasksForWorkspace,
   getValidationsForWorkspace,
 } from "@/lib/firestore";
@@ -30,15 +31,16 @@ export default function InvestorPage() {
   useEffect(() => {
     if (!workspaceId || !workspace) return;
     Promise.all([
+      getMilestones(workspaceId),
       getTasksForWorkspace(workspaceId),
       getValidationsForWorkspace(workspaceId),
       getSprints(workspaceId),
-    ]).then(([tasks, validations, sprints]) => {
+    ]).then(([milestones, tasks, validations, sprints]) => {
       setSummary(
         generateInvestorSummary(
           workspace!.name,
           workspace!.stage,
-          [],
+          milestones,
           tasks,
           validations,
           sprints

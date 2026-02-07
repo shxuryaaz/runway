@@ -7,6 +7,7 @@ import { getRoleInWorkspace } from "@/contexts/AuthContext";
 import {
   getWorkspace,
   getSprints,
+  getMilestones,
   getTasksForWorkspace,
   getTasksForSprint,
   createSprint,
@@ -18,7 +19,7 @@ import {
 } from "@/lib/firestore";
 import { addLedgerEntry } from "@/lib/firestore";
 import { hashSprintCommitment, hashSprintCompletion } from "@/lib/ledger-mock";
-import type { StartupWorkspace, Sprint, Task } from "@/lib/types";
+import type { StartupWorkspace, Sprint, Milestone, Task } from "@/lib/types";
 
 export default function SprintsPage() {
   const params = useParams();
@@ -26,6 +27,7 @@ export default function SprintsPage() {
   const { user } = useAuth();
   const [workspace, setWorkspace] = useState<StartupWorkspace | null>(null);
   const [sprints, setSprints] = useState<Sprint[]>([]);
+  const [milestones, setMilestones] = useState<Milestone[]>([]);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [selectedSprint, setSelectedSprint] = useState<Sprint | null>(null);
   const [sprintTasks, setSprintTasks] = useState<Task[]>([]);
@@ -37,7 +39,8 @@ export default function SprintsPage() {
   const [weekEnd, setWeekEnd] = useState("");
   const [selectedTaskIds, setSelectedTaskIds] = useState<string[]>([]);
   const [newItemTitle, setNewItemTitle] = useState("");
-  const [newItems, setNewItems] = useState<{ title: string }[]>([]);
+  const [newItemMilestoneId, setNewItemMilestoneId] = useState("");
+  const [newItems, setNewItems] = useState<{ title: string; milestoneId: string }[]>([]);
   const [creating, setCreating] = useState(false);
   const [locking, setLocking] = useState(false);
   const [closing, setClosing] = useState(false);
@@ -49,10 +52,12 @@ export default function SprintsPage() {
     Promise.all([
       getWorkspace(workspaceId),
       getSprints(workspaceId),
+      getMilestones(workspaceId),
       getTasksForWorkspace(workspaceId),
-    ]).then(([ws, sp, t]) => {
+    ]).then(([ws, sp, ms, t]) => {
       setWorkspace(ws ?? null);
       setSprints(sp);
+      setMilestones(ms);
       setTasks(t);
     }).finally(() => setLoading(false));
   }, [workspaceId]);
@@ -70,9 +75,10 @@ export default function SprintsPage() {
   const canWrite = role === "founder" || role === "team_member";
 
   const addNewItem = () => {
-    if (!newItemTitle.trim()) return;
-    setNewItems((prev) => [...prev, { title: newItemTitle.trim() }]);
+    if (!newItemTitle.trim() || !newItemMilestoneId) return;
+    setNewItems((prev) => [...prev, { title: newItemTitle.trim(), milestoneId: newItemMilestoneId }]);
     setNewItemTitle("");
+    setNewItemMilestoneId("");
   };
   const removeNewItem = (index: number) => setNewItems((prev) => prev.filter((_, i) => i !== index));
 
@@ -81,7 +87,7 @@ export default function SprintsPage() {
     if (!user || !workspaceId || !weekStart || !weekEnd) return;
     const allTaskIds = [...selectedTaskIds];
     for (const item of newItems) {
-      const taskId = await createTask(workspaceId, null, null, item.title, null);
+      const taskId = await createTask(workspaceId, item.milestoneId, null, item.title, null);
       allTaskIds.push(taskId);
     }
     if (allTaskIds.length === 0) {
@@ -119,6 +125,7 @@ export default function SprintsPage() {
       setSelectedTaskIds([]);
       setNewItems([]);
       setNewItemTitle("");
+      setNewItemMilestoneId("");
     } finally {
       setCreating(false);
     }
@@ -278,10 +285,20 @@ export default function SprintsPage() {
                 placeholder="New item title"
                 className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-3 py-2 text-sm min-w-[160px]"
               />
+              <select
+                value={newItemMilestoneId}
+                onChange={(e) => setNewItemMilestoneId(e.target.value)}
+                className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-3 py-2 text-sm min-w-[140px]"
+              >
+                <option value="">Milestone</option>
+                {milestones.map((m) => (
+                  <option key={m.id} value={m.id}>{m.title}</option>
+                ))}
+              </select>
               <button
                 type="button"
                 onClick={addNewItem}
-                disabled={!newItemTitle.trim()}
+                disabled={!newItemTitle.trim() || !newItemMilestoneId}
                 className="rounded-lg h-9 px-3 bg-primary/10 text-primary text-sm font-semibold hover:bg-primary/20 disabled:opacity-50"
               >
                 + Add item

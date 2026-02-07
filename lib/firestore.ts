@@ -24,6 +24,7 @@ import { getFirebaseDb } from "./firebase";
 import { COLLECTIONS } from "./constants";
 import type {
   StartupWorkspace,
+  Milestone,
   Task,
   Sprint,
   ValidationEntry,
@@ -52,6 +53,7 @@ export async function createWorkspace(
     stage,
     createdBy: founderId,
     members,
+    milestoneIds: [],
     createdAt: serverTimestamp(),
   });
   return ref.id;
@@ -68,6 +70,7 @@ export async function getWorkspace(workspaceId: string): Promise<StartupWorkspac
     stage: d.stage,
     createdBy: d.createdBy,
     members: d.members ?? [],
+    milestoneIds: d.milestoneIds ?? [],
     createdAt: toMillis(d.createdAt),
   };
 }
@@ -94,6 +97,7 @@ export async function getWorkspacesForUser(userId: string): Promise<StartupWorks
         stage: d.stage,
         createdBy: d.createdBy,
         members: members,
+        milestoneIds: d.milestoneIds ?? [],
         createdAt: toMillis(d.createdAt) || Date.now(),
       });
     }
@@ -109,10 +113,70 @@ export async function updateWorkspace(
   await updateDoc(doc(db, COLLECTIONS.WORKSPACES, workspaceId), updates as DocumentData);
 }
 
+// ---- Milestones ----
+export async function createMilestone(
+  workspaceId: string,
+  title: string,
+  description: string,
+  order: number
+): Promise<string> {
+  const db = getFirebaseDb();
+  const ref = doc(collection(db, COLLECTIONS.MILESTONES));
+  await setDoc(ref, {
+    workspaceId,
+    title,
+    description,
+    status: "planned",
+    progressPercentage: 0,
+    taskIds: [],
+    order,
+    createdAt: serverTimestamp(),
+  });
+  const ws = await getWorkspace(workspaceId);
+  if (ws) {
+    await updateDoc(doc(db, COLLECTIONS.WORKSPACES, workspaceId), {
+      milestoneIds: [...ws.milestoneIds, ref.id],
+    });
+  }
+  return ref.id;
+}
+
+export async function getMilestones(workspaceId: string): Promise<Milestone[]> {
+  const db = getFirebaseDb();
+  // Query by workspaceId only (no orderBy) to avoid requiring a composite index
+  const snap = await getDocs(
+    query(collection(db, COLLECTIONS.MILESTONES), where("workspaceId", "==", workspaceId))
+  );
+  const milestones = snap.docs.map((s) => {
+    const d = s.data();
+    return {
+      id: s.id,
+      workspaceId: d.workspaceId,
+      title: d.title,
+      description: d.description,
+      status: d.status,
+      progressPercentage: d.progressPercentage ?? 0,
+      taskIds: d.taskIds ?? [],
+      order: d.order ?? 0,
+      createdAt: toMillis(d.createdAt),
+    };
+  });
+  milestones.sort((a, b) => a.order - b.order);
+  return milestones;
+}
+
+export async function updateMilestone(
+  milestoneId: string,
+  updates: Partial<Pick<Milestone, "title" | "description" | "status" | "progressPercentage">>
+) {
+  const db = getFirebaseDb();
+  await updateDoc(doc(db, COLLECTIONS.MILESTONES, milestoneId), updates as DocumentData);
+}
+
 // ---- Tasks ----
 export async function createTask(
   workspaceId: string,
-  milestoneId: string | null,
+  milestoneId: string,
   sprintId: string | null,
   title: string,
   ownerId: string | null
@@ -122,7 +186,7 @@ export async function createTask(
   const now = Date.now();
   await setDoc(ref, {
     workspaceId,
-    milestoneId: milestoneId ?? null,
+    milestoneId,
     sprintId,
     title,
     ownerId,
@@ -130,6 +194,13 @@ export async function createTask(
     createdAt: now,
     updatedAt: now,
   });
+  const milestones = await getMilestones(workspaceId);
+  const m = milestones.find((x) => x.id === milestoneId);
+  if (m) {
+    await updateDoc(doc(db, COLLECTIONS.MILESTONES, milestoneId), {
+      taskIds: [...m.taskIds, ref.id],
+    });
+  }
   return ref.id;
 }
 
@@ -143,7 +214,7 @@ export async function getTasksForWorkspace(workspaceId: string): Promise<Task[]>
     return {
       id: s.id,
       workspaceId: d.workspaceId,
-      milestoneId: d.milestoneId ?? null,
+      milestoneId: d.milestoneId,
       sprintId: d.sprintId ?? null,
       title: d.title,
       ownerId: d.ownerId ?? null,
@@ -166,7 +237,7 @@ export async function getTasksForSprint(sprintId: string): Promise<Task[]> {
     return {
       id: s.id,
       workspaceId: d.workspaceId,
-      milestoneId: d.milestoneId ?? null,
+      milestoneId: d.milestoneId,
       sprintId: d.sprintId ?? null,
       title: d.title,
       ownerId: d.ownerId ?? null,
@@ -293,7 +364,7 @@ export async function getSprint(sprintId: string): Promise<Sprint | null> {
 export async function createValidationEntry(
   workspaceId: string,
   sprintId: string,
-  milestoneId: string | null,
+  milestoneId: string,
   type: ValidationEntry["type"],
   summary: string,
   qualitativeNotes: string,
@@ -304,7 +375,7 @@ export async function createValidationEntry(
   await setDoc(ref, {
     workspaceId,
     sprintId,
-    milestoneId: milestoneId ?? null,
+    milestoneId,
     type,
     summary,
     qualitativeNotes,
@@ -327,7 +398,7 @@ export async function getValidationsForWorkspace(
       id: s.id,
       workspaceId: d.workspaceId,
       sprintId: d.sprintId,
-      milestoneId: d.milestoneId ?? null,
+      milestoneId: d.milestoneId,
       type: d.type,
       summary: d.summary,
       qualitativeNotes: d.qualitativeNotes,

@@ -55,6 +55,7 @@ export default function DashboardWorkspacesPage() {
               displayName: user.displayName ?? undefined,
             },
           ],
+          milestoneIds: [],
           createdAt: Date.now(),
         },
       ]);
@@ -99,7 +100,7 @@ export default function DashboardWorkspacesPage() {
               </div>
             </div>
             <p className="text-sm text-[#5f6368] dark:text-gray-400">
- You’re {ws.createdBy === user?.uid ? "founder" : "member"}
+              {ws.milestoneIds.length} milestones · You’re {ws.createdBy === user?.uid ? "founder" : "member"}
             </p>
           </Link>
         ))}
