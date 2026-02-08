@@ -1,92 +1,101 @@
-# Runway
+<p align="center">
+  <strong>Runway</strong>
+</p>
+<p align="center">
+  <em>Give your startup a real Runway</em>
+</p>
+<p align="center">
+  Unified execution workspace for early-stage founders · Built for <strong>IIT Jammu Techpreneur Hackathon</strong>
+</p>
 
-Unified operational workspace for early-stage startup founders. Built for IIT Jammu Techpreneur Hackathon.
+---
 
-- **Execution tracking** — Startup workspaces, milestones, tasks, weekly sprints
-- **Roles** — Founder (full), Team member (limited write), Investor (read-only)
-- **Validation** — Internal notes and external feedback via shareable validation links (no login for respondents); evidence tied to milestones
-- **Analytics** — Tasks completed over time, sprint reliability, validation activity
-- **AI layer** — Rule-based execution and validation insights; investor summary generator
-- **Trust** — Security and transparency for execution data
+## What it does
+
+| Area | Description |
+|------|-------------|
+| **Execution** | Workspaces, milestones, tasks, weekly sprints. Plan and ship in one place. |
+| **Roles** | Founder (full access), Team member (limited write), Investor (read-only). |
+| **Validation** | Shareable links per milestone for external feedback—no login for respondents. |
+| **Analytics** | Tasks completed over time, sprint reliability, validation activity (Recharts). |
+| **Insights** | Rule-based execution and validation insights; investor one-pager generator. |
+| **Integrations** | Slack (optional): notify channels on sprint lock/close and milestone complete. |
+
+---
 
 ## Tech stack
 
-- **Frontend:** Next.js 15 (App Router), TypeScript, Tailwind; Stitch-derived UI preserved
-- **Backend:** Firebase Auth + Firestore
-- **State:** React state / context
-- **AI:** Rule-based insights and investor summary
+| Layer | Stack |
+|-------|--------|
+| Frontend | Next.js 15 (App Router), TypeScript, Tailwind CSS |
+| Backend | Firebase Auth, Firestore |
+| Charts | Recharts |
+| AI | Rule-based (extensible to LLM) |
 
-## Setup
+---
 
-1. **Install**
+## Quick start
 
-   ```bash
-   npm install
-   ```
+```bash
+npm install
+cp .env.example .env.local   # then fill in your Firebase config
+npm run dev
+```
 
-2. **Firebase**
+Open **http://localhost:3000** → Sign up → Use **Create demo workspace** on the dashboard for a one-click hackathon demo (pre-filled milestones, tasks, sprints, validations).
 
-   - Create a project at [Firebase Console](https://console.firebase.google.com)
-   - Enable **Authentication** (Email/Password; optionally Google)
-   - Create a **Firestore** database
-   - Copy config into `.env.local` (see `.env.example`)
+---
 
-   ```env
-   NEXT_PUBLIC_FIREBASE_API_KEY=...
-   NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=...
-   NEXT_PUBLIC_FIREBASE_PROJECT_ID=...
-   NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=...
-   NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=...
-   NEXT_PUBLIC_FIREBASE_APP_ID=...
-   ```
+## Setup (full)
 
-   For **public validation links** (shareable feedback form per milestone), set **`FIREBASE_SERVICE_ACCOUNT_KEY`** in `.env` to your Firebase service account JSON (Project settings → Service accounts → Generate new key). Paste the whole JSON on **one line** and wrap in single quotes so quotes inside don’t break parsing, e.g. `FIREBASE_SERVICE_ACCOUNT_KEY='{"type":"service_account","project_id":"your-project",...}'`. Alternatively use `FIREBASE_SERVICE_ACCOUNT_PATH=firebase-service-account.json` and save the JSON in that file (gitignored).    Never commit the key.
+### 1. Firebase project
 
-   **Slack (optional)** — To enable “Connect Slack” on the Integrations page (broadcast sprint/milestone events to a channel):
+1. Create a project at [Firebase Console](https://console.firebase.google.com).
+2. Enable **Authentication** (Email/Password and/or Google).
+3. Create a **Firestore** database.
+4. Add config to `.env.local`:
 
-   - Create a Slack app at [api.slack.com/apps](https://api.slack.com/apps) (Bot token, scopes: `chat:write`, `channels:read`, `groups:read`).
-   - Add to `.env`: `SLACK_CLIENT_ID`, `SLACK_CLIENT_SECRET`.
-   - Set **Redirect URL** in Slack app to `https://your-domain.com/api/slack/callback` (or `http://localhost:3000/api/slack/callback` for dev).
-   - In production set `NEXT_PUBLIC_APP_URL=https://your-domain.com` so the OAuth redirect URL is correct.
+```env
+NEXT_PUBLIC_FIREBASE_API_KEY=...
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=...
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=...
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=...
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=...
+NEXT_PUBLIC_FIREBASE_APP_ID=...
+```
 
-3. **Firestore rules**
+5. **Validation links (optional):** In Firebase → Project settings → Service accounts → Generate new key. Set in `.env`:
+   - `FIREBASE_SERVICE_ACCOUNT_KEY='{"type":"service_account",...}'` (single line), or
+   - `FIREBASE_SERVICE_ACCOUNT_PATH=firebase-service-account.json`  
+   Do not commit the key.
 
-   Deploy `firestore.rules` from the project root (e.g. `firebase deploy --only firestore:rules`).
+6. **Slack (optional):** Create an app at [api.slack.com/apps](https://api.slack.com/apps) with `chat:write`, `channels:read`, `groups:read`. Add `SLACK_CLIENT_ID`, `SLACK_CLIENT_SECRET` to `.env`. Redirect URL: `https://your-domain.com/api/slack/callback`. Set `NEXT_PUBLIC_APP_URL` in production.
 
-4. **Indexes (if prompted by Firestore)**
+### 2. Firestore
 
-   Create composite indexes for:
+- Deploy rules: `firebase deploy --only firestore:rules`
+- Create indexes when Firestore prompts (e.g. `milestones`: workspaceId + order; `tasks`: workspaceId + updatedAt; `sprints`: workspaceId + createdAt; etc.)
 
-   - `milestones`: `workspaceId` (Asc), `order` (Asc)
-   - `tasks`: `workspaceId` (Asc), `updatedAt` (Desc)
-   - `tasks`: `sprintId` (Asc), `updatedAt` (Desc)
-   - `sprints`: `workspaceId` (Asc), `createdAt` (Desc)
-   - `validations`: `workspaceId` (Asc), `createdAt` (Desc)
-   - `workspaceInvites`: `workspaceId` (Asc), `token` (Asc), `used` (Asc)
-   - `executionAuditLog`: `workspaceId` (Asc), `createdAt` (Desc)
+---
 
-5. **Run**
+## Demo flow (hackathon)
 
-   ```bash
-   npm run dev
-   ```
+1. **Sign up** (email or Google) → **Create demo workspace** (one click, pre-filled data).
+2. **Overview** — See metrics, execution chart, current sprint, milestones. Tick tasks done from the list.
+3. **Sprints** — Create/lock/close sprints; move tasks between To do / In progress / Done.
+4. **Analytics** — Bar charts for tasks completed over time and validation activity.
+5. **Funding** — Rounds, allocations, spend logs (if you use that tab).
+6. **Investor readiness** — Generate a one-pager (problem, execution, validation, roadmap).
 
-   Open [http://localhost:3000](http://localhost:3000). Sign up, create a workspace, add milestones and tasks, then create/lock/close sprints.
-
-## Demo flow
-
-1. **Sign up** → Create a **Startup workspace** (you’re the founder).
-2. **Overview** → Add **milestones**, then **tasks** under milestones.
-3. **Sprints** → **New sprint** (week range, goals, assign tasks) → **Lock sprint** → During week, update task statuses → **Close sprint** (completion summary).
-4. Track execution and view insights on the overview.
-5. **Analytics** — View tasks over time and sprint reliability.
-6. **Investor view** (founder only) — Generated summary (problem, execution, validation, roadmap).
+---
 
 ## Hackathon notes
 
-- **AI:** Execution/validation insights and investor summary are **rule-based** (see `lib/ai-mock.ts`). Replace with LLM/API when needed.
-- **Workspace membership:** Adding team members/investors to a workspace is not implemented in the UI; extend `workspace.members` and role checks as needed.
+- **AI:** Insights and investor summary live in `lib/ai-mock.ts` (rule-based). Swap in an LLM when you’re ready.
+- **Team/Investor UI:** Workspace membership is in the data model; invite UI can be extended.
+
+---
 
 ## License
 
-MIT.
+MIT
