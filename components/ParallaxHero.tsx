@@ -59,11 +59,11 @@ export function ParallaxHero({ children, className = "" }: ParallaxHeroProps) {
         const clampedPosition = Math.max(-1, Math.min(1, normalizedPosition));
 
         // Calculate target transforms based on scroll position
-        // STRONGER rotateX: starts at 16deg (tilted back), goes to -8deg (tilted forward)
-        const rotateX = 4 + clampedPosition * 12;
+        // STRONGER rotateX: starts at 20deg (tilted back), goes to -10deg (tilted forward)
+        const rotateX = 5 + clampedPosition * 15;
 
         // STRONGER translateY: creates dramatic "floating" parallax effect
-        const translateY = clampedPosition * 60;
+        const translateY = clampedPosition * 80;
 
         // scale: more noticeable scaling for depth
         const centeredness = 1 - Math.abs(clampedPosition);
