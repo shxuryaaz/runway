@@ -7,7 +7,7 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signOut as fbSignOut,
-  signInWithRedirect,
+  signInWithPopup,
   getRedirectResult,
   GoogleAuthProvider,
 } from "firebase/auth";
@@ -57,8 +57,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signInWithGoogle = async () => {
     const auth = getFirebaseAuth();
     const provider = new GoogleAuthProvider();
-    await signInWithRedirect(auth, provider);
-    // Page will reload and getRedirectResult() in useEffect will complete the sign-in
+    await signInWithPopup(auth, provider);
+    // Popup flow: no redirect, user stays on same page and onAuthStateChanged fires
   };
 
   const signUp = async (email: string, password: string, displayName?: string) => {

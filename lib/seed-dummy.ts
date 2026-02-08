@@ -9,6 +9,7 @@ import {
   createTask,
   createSprint,
   createValidationEntry,
+  updateTask,
 } from "./firestore";
 
 function getWeekRange(weeksAgo: number): { start: string; end: string } {
@@ -90,6 +91,11 @@ export async function seedDummyWorkspace(options: SeedOptions): Promise<string> 
     [t3, t5, t6],
     userId
   );
+
+  // Mark some tasks as done so demo shows progress
+  await updateTask(t1, { status: "done" });
+  await updateTask(t2, { status: "done" });
+  await updateTask(t4, { status: "done" });
 
   await createValidationEntry(
     workspaceId,

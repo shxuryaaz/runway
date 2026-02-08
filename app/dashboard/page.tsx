@@ -102,24 +102,37 @@ export default function DashboardWorkspacesPage() {
 
   return (
     <div className="space-y-8">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-[#111418] dark:text-white">
+      <div>
+        <h1 className="text-2xl font-bold text-[#111418] dark:text-white">
           Welcome back, {user?.displayName?.trim().split(/\s+/)[0] || user?.email?.split("@")[0] || "there"}
         </h1>
-          <p className="text-[#5f6368] dark:text-gray-400 text-sm mt-0.5">Your workspaces</p>
-        </div>
+        <p className="text-[#5f6368] dark:text-gray-400 text-sm mt-0.5">Your workspaces</p>
+      </div>
+
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         <button
           type="button"
           onClick={handleLoadDemoData}
           disabled={seeding}
-          className="rounded-lg h-10 px-4 border border-primary text-primary dark:border-primary dark:text-primary bg-transparent text-sm font-bold hover:bg-primary/10 disabled:opacity-50"
+          className="p-5 rounded-2xl border-2 border-primary/50 bg-primary/5 dark:bg-primary/10 text-left hover:border-primary hover:bg-primary/10 dark:hover:bg-primary/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {seeding ? "Loading…" : "Load demo data"}
+          <div className="flex items-center gap-3 mb-3">
+            <div className="size-12 rounded-xl bg-primary/20 flex items-center justify-center">
+              <span className="material-symbols-outlined text-primary text-2xl">science</span>
+            </div>
+            <div>
+              <h3 className="font-bold text-[#111418] dark:text-white">Create demo workspace</h3>
+              <p className="text-xs text-[#5f6368] dark:text-gray-400">Hackathon demo</p>
+            </div>
+          </div>
+          <p className="text-sm text-[#5f6368] dark:text-gray-400">
+            One click: new workspace with milestones, tasks, sprints & validations. Ready to demo.
+          </p>
+          <span className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-primary">
+            {seeding ? "Creating…" : "Create & open demo →"}
+          </span>
         </button>
-      </div>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {workspaces.map((ws) => (
           <Link
             key={ws.id}

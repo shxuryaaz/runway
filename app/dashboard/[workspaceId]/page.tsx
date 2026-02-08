@@ -50,7 +50,7 @@ export default function WorkspaceOverviewPage() {
   const [validationLinkCopiedId, setValidationLinkCopiedId] = useState<string | null>(null);
   const [updatingTaskId, setUpdatingTaskId] = useState<string | null>(null);
   type ChartMetricType = "sprint_completion" | "tasks_done" | "validations";
-  const [chartMetric, setChartMetric] = useState<ChartMetricType>("sprint_completion");
+  const [chartMetric, setChartMetric] = useState<ChartMetricType>("tasks_done");
 
   const handleTaskStatusToggle = async (taskId: string, currentStatus: Task["status"]) => {
     if (!canWrite || updatingTaskId !== null) return;
